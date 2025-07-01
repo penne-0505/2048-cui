@@ -1,6 +1,7 @@
 import curses
 
-from src.core.save_load import MANUAL_SAVE_SLOTS, get_save_slots
+from core.save_load import MANUAL_SAVE_SLOTS, get_all_save_slots_info, get_save_slots
+from ui.input import get_text_input
 
 
 def select_from_menu(stdscr, title, options):
@@ -42,19 +43,56 @@ def show_start_menu(stdscr):
 
 
 def show_load_menu(stdscr):
-    slots = sorted(get_save_slots())
-    if not slots:
+    slots_info = get_all_save_slots_info()
+    if not slots_info:
         return None
 
-    choice = select_from_menu(stdscr, "Select a save slot to load:", slots)
-    if choice:
-        return int(choice.split("_")[1].split(".")[0])
+    # Create display options with score information
+    options = []
+    slot_mapping = {}
+
+    for info in slots_info:
+        status = "Game Over" if info["game_over"] else "In Progress"
+        display_text = f"{info['name']} (Slot {info['slot']}): Score {info['score']} ({status}) - {info['date']}"
+        options.append(display_text)
+        slot_mapping[display_text] = info["slot"]
+
+    choice = select_from_menu(stdscr, "Select a save slot to load:", options)
+    if choice and choice in slot_mapping:
+        return slot_mapping[choice]
     return None
 
 
 def show_save_menu(stdscr):
-    options = [f"Slot {i}" for i in range(1, MANUAL_SAVE_SLOTS + 1)]
+    # Get existing save slot info to show current names
+    slots_info = get_all_save_slots_info()
+    existing_slots = {info["slot"]: info["name"] for info in slots_info}
+
+    options = []
+    slot_mapping = {}
+
+    for i in range(1, MANUAL_SAVE_SLOTS + 1):
+        existing_name = existing_slots.get(i, "")
+        if existing_name:
+            display_text = f"Slot {i}: {existing_name}"
+        else:
+            display_text = f"Slot {i}: [Empty]"
+        options.append(display_text)
+        slot_mapping[display_text] = i
+
     choice = select_from_menu(stdscr, "Select a slot to save:", options)
-    if choice:
-        return int(choice.split(" ")[1])
+    if choice and choice in slot_mapping:
+        slot = slot_mapping[choice]
+
+        # Get save name from user
+        current_name = existing_slots.get(slot, "")
+        prompt = (
+            f"Enter name for save (current: '{current_name}'):"
+            if current_name
+            else "Enter name for save:"
+        )
+        name = get_text_input(stdscr, prompt)
+
+        if name is not None:  # User didn't cancel
+            return slot, name
     return None
