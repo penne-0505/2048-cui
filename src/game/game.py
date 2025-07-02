@@ -2,7 +2,7 @@ from .board import Board
 
 
 class Game:
-    def __init__(self, size=4):
+    def __init__(self, size: int = 4) -> None:
         self.board = Board(size)
         self.score = 0
         self.game_over = False
@@ -12,11 +12,11 @@ class Game:
         self._score_change_time = 0  # Track when score changed
         self._score_history = []  # Track recent score additions for display
 
-    def start(self):
+    def start(self) -> None:
         self.board.place_new_tile(2)
         self.board.place_new_tile(2)
 
-    def is_game_over(self):
+    def is_game_over(self) -> bool:
         # In endless mode, never game over
         if self.endless_mode:
             return False
@@ -35,12 +35,12 @@ class Game:
                     return False
         return True
 
-    def enable_endless_mode(self):
+    def enable_endless_mode(self) -> None:
         """Enable endless mode - game continues even after reaching win condition."""
         self.endless_mode = True
         self.game_over = False
 
-    def has_won(self):
+    def has_won(self) -> bool:
         """Check if player has reached 2048."""
         for r in range(self.board.size):
             for c in range(self.board.size):
@@ -48,7 +48,7 @@ class Game:
                     return True
         return False
 
-    def move(self, direction):
+    def move(self, direction: str) -> bool:
         if direction == "left":
             return self._move_left()
         elif direction == "right":
@@ -68,7 +68,7 @@ class Game:
             return moved
         return False
 
-    def _move_left(self):
+    def _move_left(self) -> bool:
         moved = False
         self.recent_merges = []  # Clear previous merges
         old_score = self.score
@@ -120,6 +120,6 @@ class Game:
 
         return moved
 
-    def get_recent_merges(self):
+    def get_recent_merges(self) -> list[tuple[int, int, int]]:
         """Get recent tile merges for animation purposes."""
         return self.recent_merges

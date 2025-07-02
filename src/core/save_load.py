@@ -1,16 +1,17 @@
 import json
 import os
+from typing import Any
 
 SAVE_DIR = "saves"
 MANUAL_SAVE_SLOTS = 5
 
 
-def ensure_save_dir_exists():
+def ensure_save_dir_exists() -> None:
     if not os.path.exists(SAVE_DIR):
         os.makedirs(SAVE_DIR)
 
 
-def save_game(game, slot, name=None):
+def save_game(game: Any, slot: int, name: str | None = None) -> None:
     ensure_save_dir_exists()
     file_path = os.path.join(SAVE_DIR, f"slot_{slot}.json")
 
@@ -35,7 +36,7 @@ def save_game(game, slot, name=None):
         json.dump(data, f, indent=2)
 
 
-def load_game(game, slot):
+def load_game(game: Any, slot: int) -> bool:
     file_path = os.path.join(SAVE_DIR, f"slot_{slot}.json")
     if not os.path.exists(file_path):
         return False
@@ -55,13 +56,13 @@ def load_game(game, slot):
     return True
 
 
-def get_save_slots():
+def get_save_slots() -> list[str]:
     ensure_save_dir_exists()
     files = os.listdir(SAVE_DIR)
     return [f for f in files if f.startswith("slot_") and f.endswith(".json")]
 
 
-def get_save_slot_info(slot):
+def get_save_slot_info(slot: int) -> dict[str, Any] | None:
     """Get save slot information including score and game status."""
     file_path = os.path.join(SAVE_DIR, f"slot_{slot}.json")
     if not os.path.exists(file_path):
@@ -88,7 +89,7 @@ def get_save_slot_info(slot):
         return None
 
 
-def get_all_save_slots_info():
+def get_all_save_slots_info() -> list[dict[str, Any]]:
     """Get information for all save slots."""
     slots_info = []
     files = get_save_slots()

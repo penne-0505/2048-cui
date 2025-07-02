@@ -1,0 +1,41 @@
+{
+  "keys": {
+    "movement": {
+      "up": [
+        "KEY_UP",
+        "w"
+      ],
+      "down": [
+        "KEY_DOWN",
+        "s"
+      ],
+      "left": [
+        "KEY_LEFT",
+        "a"
+      ],
+      "right": [
+        "KEY_RIGHT",
+        "d"
+      ]
+    },
+    "actions": {
+      "quit": [
+        "q",
+        "ESC"
+      ],
+      "save": [
+        "h"
+      ],
+      "return_to_title": [
+        "r"
+      ],
+      "load": [
+        "l"
+      ],
+      "change_theme": [
+        "t"
+      ]
+    }
+  },
+  "theme": "modern"
+}

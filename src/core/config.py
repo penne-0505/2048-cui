@@ -1,6 +1,7 @@
 import curses
 import json
 import os
+from typing import Any
 
 CONFIG_FILE = "config.json"
 
@@ -25,7 +26,7 @@ DEFAULT_CONFIG = {
 }
 
 
-def load_config():
+def load_config() -> dict[str, Any]:
     """Load configuration from file or create default if not exists."""
     if os.path.exists(CONFIG_FILE):
         try:
@@ -40,24 +41,26 @@ def load_config():
     return DEFAULT_CONFIG
 
 
-def save_config(config):
+def save_config(config: dict[str, Any]) -> None:
     """Save configuration to file."""
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f, indent=2)
 
 
-def get_theme(config):
+def get_theme(config: dict[str, Any]) -> str:
     """Get the current theme name from config."""
     return config.get("theme", "modern")
 
 
-def set_theme(config, theme_name):
+def set_theme(config: dict[str, Any], theme_name: str) -> None:
     """Set the theme in config and save."""
     config["theme"] = theme_name
     save_config(config)
 
 
-def get_key_codes(config):
+def get_key_codes(
+    config: dict[str, Any],
+) -> tuple[dict[int, str], dict[str, list[int]]]:
     """Convert string key names to curses key codes."""
     key_map = {}
 

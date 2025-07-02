@@ -55,7 +55,7 @@ COLOR_PAIRS = {
 }
 
 
-def init_modern_colors():
+def init_modern_colors() -> None:
     """Initialize color pairs for modern theme."""
     curses.start_color()
     curses.use_default_colors()
@@ -80,7 +80,7 @@ def init_modern_colors():
     curses.init_pair(COLOR_PAIRS["ui_controls"], theme["ui_colors"]["controls"], -1)
 
 
-def get_tile_color_pair(value):
+def get_tile_color_pair(value: int) -> int:
     """Get color pair for tile value."""
     if value == 0:
         return COLOR_PAIRS["tile_empty"]
@@ -91,7 +91,7 @@ def get_tile_color_pair(value):
         return COLOR_PAIRS["tile_4096"]
 
 
-def get_ui_color_pairs():
+def get_ui_color_pairs() -> dict[str, int]:
     """Get UI color pairs."""
     return {
         "score": COLOR_PAIRS["ui_score"],

@@ -4,7 +4,9 @@ from core.save_load import MANUAL_SAVE_SLOTS, get_all_save_slots_info, get_save_
 from ui.input import get_text_input
 
 
-def select_from_menu(stdscr, title, options):
+def select_from_menu(
+    stdscr: curses.window, title: str, options: list[str]
+) -> str | None:
     stdscr.clear()
     height, width = stdscr.getmaxyx()
     stdscr.addstr(0, 1, title)
@@ -29,7 +31,7 @@ def select_from_menu(stdscr, title, options):
             return None
 
 
-def show_start_menu(stdscr):
+def show_start_menu(stdscr: curses.window) -> str | None:
     options = ["New Game"]
     if get_save_slots():
         options.append("Load Game")
@@ -42,7 +44,7 @@ def show_start_menu(stdscr):
     return None
 
 
-def show_load_menu(stdscr):
+def show_load_menu(stdscr: curses.window) -> int | None:
     slots_info = get_all_save_slots_info()
     if not slots_info:
         return None
@@ -63,7 +65,7 @@ def show_load_menu(stdscr):
     return None
 
 
-def show_save_menu(stdscr):
+def show_save_menu(stdscr: curses.window) -> tuple[int, str] | None:
     # Get existing save slot info to show current names
     slots_info = get_all_save_slots_info()
     existing_slots = {info["slot"]: info["name"] for info in slots_info}

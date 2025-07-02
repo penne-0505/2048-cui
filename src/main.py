@@ -4,14 +4,14 @@ import random
 from core.config import get_key_codes, load_config
 from core.save_load import load_game, save_game
 from game.game import Game
-from ui.modern_display import draw_board, init_colors
 from ui.menu import show_load_menu, show_save_menu, show_start_menu
+from ui.modern_display import draw_board, init_colors
 
 AUTO_SAVE_SLOT = 0
 MANUAL_SAVE_SLOTS = 5
 
 
-def main(stdscr):
+def main(stdscr: curses.window) -> None:
     curses.curs_set(0)
 
     # Load configuration

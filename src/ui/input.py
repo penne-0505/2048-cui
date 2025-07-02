@@ -1,7 +1,9 @@
 import curses
 
 
-def get_text_input(stdscr, prompt, max_length=30):
+def get_text_input(
+    stdscr: curses.window, prompt: str, max_length: int = 30
+) -> str | None:
     """Get text input from user with cursor navigation."""
     stdscr.clear()
     height, width = stdscr.getmaxyx()

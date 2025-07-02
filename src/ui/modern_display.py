@@ -4,6 +4,7 @@ Based on mm.png design - clean, floating tiles, minimal UI.
 """
 
 import curses
+from typing import Any
 
 from core.modern_themes import (
     get_tile_color_pair,
@@ -12,12 +13,14 @@ from core.modern_themes import (
 )
 
 
-def init_display():
+def init_display() -> None:
     """Initialize the modern display system."""
     init_modern_colors()
 
 
-def draw_modern_game(stdscr, game, config=None):
+def draw_modern_game(
+    stdscr: curses.window, game: Any, config: dict[str, Any] | None = None
+) -> None:
     """
     Draw the game using modern minimalist design.
 
@@ -53,7 +56,9 @@ def draw_modern_game(stdscr, game, config=None):
     stdscr.refresh()
 
 
-def draw_score_header(stdscr, game, ui_colors, width):
+def draw_score_header(
+    stdscr: curses.window, game: Any, ui_colors: dict[str, int], width: int
+) -> None:
     """Draw score display with total on top-right and history below."""
     try:
         # Game title on top-left
@@ -82,7 +87,9 @@ def draw_score_header(stdscr, game, ui_colors, width):
         stdscr.addstr(0, 0, f"Score: {game.score}")
 
 
-def draw_score_history(stdscr, game, ui_colors, width):
+def draw_score_history(
+    stdscr: curses.window, game: Any, ui_colors: dict[str, int], width: int
+) -> None:
     """Draw recent score additions in descending order."""
     score_history = getattr(game, "_score_history", [])
 
@@ -127,7 +134,9 @@ def draw_score_history(stdscr, game, ui_colors, width):
             break  # Stop if we run out of screen space
 
 
-def draw_floating_tiles(stdscr, game, start_y, start_x):
+def draw_floating_tiles(
+    stdscr: curses.window, game: Any, start_y: int, start_x: int
+) -> None:
     """Draw 4x4 grid of floating tiles with borders."""
     for row in range(4):
         for col in range(4):
@@ -140,7 +149,7 @@ def draw_floating_tiles(stdscr, game, start_y, start_x):
             draw_single_tile(stdscr, tile_value, tile_y, tile_x)
 
 
-def draw_single_tile(stdscr, value, y, x):
+def draw_single_tile(stdscr: curses.window, value: int, y: int, x: int) -> None:
     """Draw a single tile with border outline."""
     color_pair = get_tile_color_pair(value)
 
@@ -174,7 +183,9 @@ def draw_single_tile(stdscr, value, y, x):
             pass
 
 
-def draw_simple_controls(stdscr, ui_colors, height, width):
+def draw_simple_controls(
+    stdscr: curses.window, ui_colors: dict[str, int], height: int, width: int
+) -> None:
     """Draw minimal control information at bottom."""
     controls = ["Back/Restart", "↑ ← ↓ →", "Quit"]
 
@@ -212,7 +223,9 @@ def draw_simple_controls(stdscr, ui_colors, height, width):
         pass
 
 
-def draw_game_over(stdscr, ui_colors, height, width):
+def draw_game_over(
+    stdscr: curses.window, ui_colors: dict[str, int], height: int, width: int
+) -> None:
     """Draw game over overlay."""
     message = "Game Over!"
 
@@ -240,11 +253,16 @@ def draw_game_over(stdscr, ui_colors, height, width):
 
 
 # Compatibility function for existing code
-def draw_board(stdscr, game, config=None, enable_animations=False):
+def draw_board(
+    stdscr: curses.window,
+    game: Any,
+    config: dict[str, Any] | None = None,
+    enable_animations: bool = False,
+) -> None:
     """Compatibility wrapper for existing main.py."""
     draw_modern_game(stdscr, game, config)
 
 
-def init_colors(theme_name="modern"):
+def init_colors(theme_name: str = "modern") -> None:
     """Compatibility wrapper for existing main.py."""
     init_display()

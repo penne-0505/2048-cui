@@ -3,6 +3,8 @@ Key display name mapping and formatting utilities.
 This module automatically generates human-readable key descriptions from config.
 """
 
+from typing import Any
+
 # Mapping of action keys to display names
 ACTION_DISPLAY_NAMES = {
     "quit": "Quit",
@@ -31,28 +33,28 @@ KEY_DISPLAY_MAPPING = {
 }
 
 
-def get_action_display_name(action_key):
+def get_action_display_name(action_key: str) -> str:
     """Get human-readable display name for an action key."""
     return ACTION_DISPLAY_NAMES.get(action_key, action_key.replace("_", " ").title())
 
 
-def get_movement_display_name(movement_key):
+def get_movement_display_name(movement_key: str) -> str:
     """Get human-readable display name for a movement key."""
     return MOVEMENT_DISPLAY_NAMES.get(movement_key, movement_key.capitalize())
 
 
-def format_key_for_display(key):
+def format_key_for_display(key: str) -> str:
     """Format a key name for display (e.g., KEY_UP -> ↑)."""
     return KEY_DISPLAY_MAPPING.get(key, key.upper())
 
 
-def format_key_list_for_display(keys):
+def format_key_list_for_display(keys: list[str]) -> str:
     """Format a list of keys for display with proper separators."""
     formatted_keys = [format_key_for_display(key) for key in keys]
     return "/".join(formatted_keys)
 
 
-def generate_cheatsheet_data(config):
+def generate_cheatsheet_data(config: dict[str, Any]) -> dict[str, list[dict[str, str]]]:
     """Generate cheatsheet data from config automatically."""
     cheatsheet = {"movement": [], "actions": []}
 
