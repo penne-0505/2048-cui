@@ -157,7 +157,6 @@ THEMES = {
 
 1. `python src/main.py` でゲーム開始
 2. ゲーム中に `t` キーでテーマ切り替え
-3. `python visual_demo.py` でテーマデモ実行
 
 ## 技術的特徴
 
