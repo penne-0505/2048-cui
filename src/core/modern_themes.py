@@ -5,6 +5,8 @@ Clean, contemporary visual design with floating tiles.
 
 import curses
 
+from .constants import COLOR_PAIR_START_TILE, COLOR_PAIR_START_UI, MAX_TILE_VALUE
+
 # Modern minimalist theme inspired by mm.png
 MODERN_THEME = {
     "name": "Modern Minimalist",
@@ -34,24 +36,24 @@ MODERN_THEME = {
     },
 }
 
-# Color pair mappings (starting from 100 to avoid conflicts)
+# Color pair mappings (starting from constants to avoid conflicts)
 COLOR_PAIRS = {
-    "tile_empty": 100,
-    "tile_2": 101,
-    "tile_4": 102,
-    "tile_8": 103,
-    "tile_16": 104,
-    "tile_32": 105,
-    "tile_64": 106,
-    "tile_128": 107,
-    "tile_256": 108,
-    "tile_512": 109,
-    "tile_1024": 110,
-    "tile_2048": 111,
-    "tile_4096": 112,
-    "ui_score": 120,
-    "ui_score_accent": 121,
-    "ui_controls": 122,
+    "tile_empty": COLOR_PAIR_START_TILE,
+    "tile_2": COLOR_PAIR_START_TILE + 1,
+    "tile_4": COLOR_PAIR_START_TILE + 2,
+    "tile_8": COLOR_PAIR_START_TILE + 3,
+    "tile_16": COLOR_PAIR_START_TILE + 4,
+    "tile_32": COLOR_PAIR_START_TILE + 5,
+    "tile_64": COLOR_PAIR_START_TILE + 6,
+    "tile_128": COLOR_PAIR_START_TILE + 7,
+    "tile_256": COLOR_PAIR_START_TILE + 8,
+    "tile_512": COLOR_PAIR_START_TILE + 9,
+    "tile_1024": COLOR_PAIR_START_TILE + 10,
+    "tile_2048": COLOR_PAIR_START_TILE + 11,
+    "tile_4096": COLOR_PAIR_START_TILE + 12,
+    "ui_score": COLOR_PAIR_START_UI,
+    "ui_score_accent": COLOR_PAIR_START_UI + 1,
+    "ui_controls": COLOR_PAIR_START_UI + 2,
 }
 
 
@@ -84,11 +86,11 @@ def get_tile_color_pair(value: int) -> int:
     """Get color pair for tile value."""
     if value == 0:
         return COLOR_PAIRS["tile_empty"]
-    elif value <= 4096 and f"tile_{value}" in COLOR_PAIRS:
+    elif value <= MAX_TILE_VALUE and f"tile_{value}" in COLOR_PAIRS:
         return COLOR_PAIRS[f"tile_{value}"]
     else:
         # For very high values, use the highest defined color
-        return COLOR_PAIRS["tile_4096"]
+        return COLOR_PAIRS[f"tile_{MAX_TILE_VALUE}"]
 
 
 def get_ui_color_pairs() -> dict[str, int]:

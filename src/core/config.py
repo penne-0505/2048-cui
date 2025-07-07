@@ -3,7 +3,9 @@ import json
 import os
 from typing import Any
 
-CONFIG_FILE = "config.json"
+from .constants import CONFIG_FILENAME
+
+CONFIG_FILE = CONFIG_FILENAME
 
 # Default key mappings
 DEFAULT_CONFIG = {
@@ -23,6 +25,7 @@ DEFAULT_CONFIG = {
         },
     },
     "theme": "modern",
+    "save_path": None,  # None means use default path
 }
 
 
@@ -32,19 +35,33 @@ def load_config() -> dict[str, Any]:
         try:
             with open(CONFIG_FILE, "r") as f:
                 config = json.load(f)
-            return config
-        except (json.JSONDecodeError, IOError):
+            # Validate that config has required structure
+            if isinstance(config, dict) and "keys" in config:
+                return config
+        except (json.JSONDecodeError, IOError, PermissionError):
+            # If we can't read or parse the config file, fall back to default
             pass
 
     # Create default config file
-    save_config(DEFAULT_CONFIG)
-    return DEFAULT_CONFIG
+    if save_config(DEFAULT_CONFIG):
+        return DEFAULT_CONFIG
+    else:
+        # If we can't save the config file, just return the default in memory
+        return DEFAULT_CONFIG.copy()
 
 
-def save_config(config: dict[str, Any]) -> None:
-    """Save configuration to file."""
-    with open(CONFIG_FILE, "w") as f:
-        json.dump(config, f, indent=2)
+def save_config(config: dict[str, Any]) -> bool:
+    """Save configuration to file. Returns True if successful, False otherwise."""
+    try:
+        with open(CONFIG_FILE, "w") as f:
+            json.dump(config, f, indent=2)
+        return True
+    except (IOError, OSError, PermissionError, json.JSONEncodeError) as e:
+        # File access or JSON encoding errors
+        return False
+    except Exception as e:
+        # Any other unexpected errors
+        return False
 
 
 def get_theme(config: dict[str, Any]) -> str:
@@ -52,10 +69,21 @@ def get_theme(config: dict[str, Any]) -> str:
     return config.get("theme", "modern")
 
 
-def set_theme(config: dict[str, Any], theme_name: str) -> None:
-    """Set the theme in config and save."""
+def set_theme(config: dict[str, Any], theme_name: str) -> bool:
+    """Set the theme in config and save. Returns True if successful."""
     config["theme"] = theme_name
-    save_config(config)
+    return save_config(config)
+
+
+def get_save_path(config: dict[str, Any]) -> str | None:
+    """Get the custom save path from config."""
+    return config.get("save_path")
+
+
+def set_save_path(config: dict[str, Any], save_path: str | None) -> bool:
+    """Set the save path in config and save. Returns True if successful."""
+    config["save_path"] = save_path
+    return save_config(config)
 
 
 def get_key_codes(
