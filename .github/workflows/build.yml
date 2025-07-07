@@ -86,7 +86,7 @@ jobs:
           ## 2048-CLI Release
           
           ### Downloads
-          - **Linux**: `2048-cli` (バイナリ)
+          - **Linux**: `2048-cli` (binary)
           - **Windows**: `2048-cli.exe`
           
           ### インストール方法
@@ -96,7 +96,7 @@ jobs:
           
           ### 使用方法
           ```bash
-          # Linux バイナリ
+          # Linux binary
           chmod +x 2048-cli
           ./2048-cli
           
