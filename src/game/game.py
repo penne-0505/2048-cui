@@ -1,20 +1,29 @@
+import time
+from typing import List, Dict, Tuple, Any
+
 from .board import Board
+from core.constants import (
+    DEFAULT_BOARD_SIZE,
+    WIN_TILE_VALUE,
+    MAX_SCORE_HISTORY_ENTRIES,
+    INITIAL_TILE_VALUE
+)
 
 
 class Game:
-    def __init__(self, size: int = 4) -> None:
-        self.board = Board(size)
-        self.score = 0
-        self.game_over = False
-        self.endless_mode = False
-        self.recent_merges = []  # Track recent merges for animations
-        self._last_score_change = 0  # Track score changes for display
-        self._score_change_time = 0  # Track when score changed
-        self._score_history = []  # Track recent score additions for display
+    def __init__(self, size: int = DEFAULT_BOARD_SIZE) -> None:
+        self.board: Board = Board(size)
+        self.score: int = 0
+        self.game_over: bool = False
+        self.endless_mode: bool = False
+        self.recent_merges: List[Tuple[int, int, int]] = []  # Track recent merges for animations
+        self._last_score_change: int = 0  # Track score changes for display
+        self._score_change_time: float = 0  # Track when score changed
+        self._score_history: List[Dict[str, Any]] = []  # Track recent score additions for display
 
     def start(self) -> None:
-        self.board.place_new_tile(2)
-        self.board.place_new_tile(2)
+        self.board.place_new_tile(INITIAL_TILE_VALUE)
+        self.board.place_new_tile(INITIAL_TILE_VALUE)
 
     def is_game_over(self) -> bool:
         # In endless mode, never game over
@@ -41,10 +50,10 @@ class Game:
         self.game_over = False
 
     def has_won(self) -> bool:
-        """Check if player has reached 2048."""
+        """Check if player has reached the win condition."""
         for r in range(self.board.size):
             for c in range(self.board.size):
-                if self.board.grid[r][c] >= 2048:
+                if self.board.grid[r][c] >= WIN_TILE_VALUE:
                     return True
         return False
 
@@ -106,17 +115,15 @@ class Game:
         score_change = self.score - old_score
         if score_change > 0:
             self._last_score_change = score_change
-            import time
-
             current_time = time.time()
             self._score_change_time = current_time
 
             # Add to score history (keep last 5 entries)
             self._score_history.append({"points": score_change, "time": current_time})
 
-            # Keep only the most recent 5 score changes
-            if len(self._score_history) > 5:
-                self._score_history = self._score_history[-5:]
+            # Keep only the most recent score changes
+            if len(self._score_history) > MAX_SCORE_HISTORY_ENTRIES:
+                self._score_history = self._score_history[-MAX_SCORE_HISTORY_ENTRIES:]
 
         return moved
 

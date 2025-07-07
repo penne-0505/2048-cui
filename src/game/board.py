@@ -1,12 +1,15 @@
 import random
+from typing import List, Tuple
+
+from core.constants import DEFAULT_BOARD_SIZE
 
 
 class Board:
-    def __init__(self, size: int = 4) -> None:
-        self.size = size
-        self.grid = [[0] * size for _ in range(size)]
+    def __init__(self, size: int = DEFAULT_BOARD_SIZE) -> None:
+        self.size: int = size
+        self.grid: List[List[int]] = [[0] * size for _ in range(size)]
 
-    def get_empty_cells(self) -> list[tuple[int, int]]:
+    def get_empty_cells(self) -> List[Tuple[int, int]]:
         return [
             (r, c)
             for r in range(self.size)
