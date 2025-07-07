@@ -18,26 +18,29 @@ jobs:
       with:
         python-version: '3.12'
     
+    - name: Install Poetry
+      run: |
+        pip install poetry
+
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -e ".[dev]"
+        poetry install --no-root --sync --with dev
     
     - name: Run ruff linter
       run: |
-        ruff check src/
+        poetry run ruff check src/
     
     - name: Run ruff formatter check
       run: |
-        ruff format --check src/
+        poetry run ruff format --check src/
     
     - name: Run mypy type checker
       run: |
-        mypy src/
+        poetry run mypy src/
     
     - name: Check import sorting
       run: |
-        ruff check --select I src/
+        poetry run ruff check --select I src/
     
     - name: Run security checks (if any security issues found)
       run: |
