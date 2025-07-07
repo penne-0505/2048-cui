@@ -33,12 +33,12 @@ def load_config() -> dict[str, Any]:
     """Load configuration from file or create default if not exists."""
     if os.path.exists(CONFIG_FILE):
         try:
-            with open(CONFIG_FILE, "r") as f:
+            with open(CONFIG_FILE) as f:
                 config = json.load(f)
             # Validate that config has required structure
             if isinstance(config, dict) and "keys" in config:
                 return config
-        except (json.JSONDecodeError, IOError, PermissionError):
+        except (OSError, json.JSONDecodeError, PermissionError):
             # If we can't read or parse the config file, fall back to default
             pass
 
@@ -56,10 +56,10 @@ def save_config(config: dict[str, Any]) -> bool:
         with open(CONFIG_FILE, "w") as f:
             json.dump(config, f, indent=2)
         return True
-    except (IOError, OSError, PermissionError, json.JSONEncodeError) as e:
+    except (OSError, PermissionError, json.JSONEncodeError):
         # File access or JSON encoding errors
         return False
-    except Exception as e:
+    except Exception:
         # Any other unexpected errors
         return False
 

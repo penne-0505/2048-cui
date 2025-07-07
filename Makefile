@@ -26,15 +26,42 @@ dev-install:
 
 # Run linter
 lint:
-	ruff check src/
+	@if command -v poetry >/dev/null 2>&1; then \
+		poetry run ruff check src/; \
+	elif command -v ruff >/dev/null 2>&1; then \
+		ruff check src/; \
+	elif [ -f venv/bin/ruff ]; then \
+		venv/bin/ruff check src/; \
+	else \
+		echo "Error: ruff not found. Run 'poetry install -E dev' or activate virtual environment"; \
+		exit 1; \
+	fi
 
 # Format code
 format:
-	ruff format src/
+	@if command -v poetry >/dev/null 2>&1; then \
+		poetry run ruff format src/; \
+	elif command -v ruff >/dev/null 2>&1; then \
+		ruff format src/; \
+	elif [ -f venv/bin/ruff ]; then \
+		venv/bin/ruff format src/; \
+	else \
+		echo "Error: ruff not found. Run 'poetry install -E dev' or activate virtual environment"; \
+		exit 1; \
+	fi
 
 # Run type checker
 type-check:
-	mypy src/
+	@if command -v poetry >/dev/null 2>&1; then \
+		poetry run mypy src/; \
+	elif command -v mypy >/dev/null 2>&1; then \
+		mypy src/; \
+	elif [ -f venv/bin/mypy ]; then \
+		venv/bin/mypy src/; \
+	else \
+		echo "Error: mypy not found. Run 'poetry install -E dev' or activate virtual environment"; \
+		exit 1; \
+	fi
 
 # Run all checks
 check: lint type-check
@@ -42,8 +69,19 @@ check: lint type-check
 
 # Fix auto-fixable issues
 fix:
-	ruff check --fix src/
-	ruff format src/
+	@if command -v poetry >/dev/null 2>&1; then \
+		poetry run ruff check --fix src/; \
+		poetry run ruff format src/; \
+	elif command -v ruff >/dev/null 2>&1; then \
+		ruff check --fix src/; \
+		ruff format src/; \
+	elif [ -f venv/bin/ruff ]; then \
+		venv/bin/ruff check --fix src/; \
+		venv/bin/ruff format src/; \
+	else \
+		echo "Error: ruff not found. Run 'poetry install -E dev' or activate virtual environment"; \
+		exit 1; \
+	fi
 
 # Run tests (placeholder for future test implementation)
 test:
@@ -59,4 +97,10 @@ clean:
 
 # Build the application
 build: clean
-	python build.py
+	@if command -v poetry >/dev/null 2>&1; then \
+		poetry run python build.py; \
+	elif [ -f venv/bin/python ]; then \
+		venv/bin/python build.py; \
+	else \
+		python build.py; \
+	fi

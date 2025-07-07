@@ -5,21 +5,21 @@ Based on mm.png design - clean, floating tiles, minimal UI.
 
 import curses
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
+from core.constants import (
+    DEFAULT_BOARD_SIZE,
+    SCORE_CHANGE_DISPLAY_DURATION,
+    SCORE_FADE_MEDIUM_THRESHOLD,
+    SCORE_FADE_RECENT_THRESHOLD,
+    TILE_HEIGHT,
+    TILE_SPACING,
+    TILE_WIDTH,
+)
 from core.modern_themes import (
     get_tile_color_pair,
     get_ui_color_pairs,
     init_modern_colors,
-)
-from core.constants import (
-    SCORE_CHANGE_DISPLAY_DURATION,
-    SCORE_FADE_RECENT_THRESHOLD,
-    SCORE_FADE_MEDIUM_THRESHOLD,
-    TILE_WIDTH,
-    TILE_HEIGHT,
-    TILE_SPACING,
-    DEFAULT_BOARD_SIZE
 )
 
 
@@ -29,7 +29,7 @@ def init_display() -> None:
 
 
 def draw_modern_game(
-    stdscr: curses.window, game: Any, config: Optional[Dict[str, Any]] = None
+    stdscr: curses.window, game: Any, config: dict[str, Any] | None = None
 ) -> None:
     """
     Draw the game using modern minimalist design.
@@ -49,8 +49,9 @@ def draw_modern_game(
 
     # Calculate board position (centered) for bordered tiles
     board_start_y = 4  # Leave space for header
-    board_width = (DEFAULT_BOARD_SIZE * TILE_WIDTH + 
-                   (DEFAULT_BOARD_SIZE - 1) * TILE_SPACING)
+    board_width = (
+        DEFAULT_BOARD_SIZE * TILE_WIDTH + (DEFAULT_BOARD_SIZE - 1) * TILE_SPACING
+    )
     # Center the board properly
     board_start_x = max(2, (width - board_width) // 2)
 
@@ -68,7 +69,7 @@ def draw_modern_game(
 
 
 def draw_score_header(
-    stdscr: curses.window, game: Any, ui_colors: Dict[str, int], width: int
+    stdscr: curses.window, game: Any, ui_colors: dict[str, int], width: int
 ) -> None:
     """Draw score display with total on top-right and history below."""
     try:
@@ -99,7 +100,7 @@ def draw_score_header(
 
 
 def draw_score_history(
-    stdscr: curses.window, game: Any, ui_colors: Dict[str, int], width: int
+    stdscr: curses.window, game: Any, ui_colors: dict[str, int], width: int
 ) -> None:
     """Draw recent score additions in descending order."""
     score_history = getattr(game, "_score_history", [])
@@ -111,7 +112,9 @@ def draw_score_history(
 
     # Filter recent changes and sort by time (newest first)
     recent_changes = [
-        change for change in score_history if current_time - change["time"] < SCORE_CHANGE_DISPLAY_DURATION
+        change
+        for change in score_history
+        if current_time - change["time"] < SCORE_CHANGE_DISPLAY_DURATION
     ]
     recent_changes.sort(key=lambda x: x["time"], reverse=True)
 
@@ -197,7 +200,7 @@ def draw_single_tile(stdscr: curses.window, value: int, y: int, x: int) -> None:
 
 
 def draw_simple_controls(
-    stdscr: curses.window, ui_colors: Dict[str, int], height: int, width: int
+    stdscr: curses.window, ui_colors: dict[str, int], height: int, width: int
 ) -> None:
     """Draw minimal control information at bottom."""
     controls = ["Back/Restart", "↑ ← ↓ →", "Quit"]
@@ -237,7 +240,7 @@ def draw_simple_controls(
 
 
 def draw_game_over(
-    stdscr: curses.window, ui_colors: Dict[str, int], height: int, width: int
+    stdscr: curses.window, ui_colors: dict[str, int], height: int, width: int
 ) -> None:
     """Draw game over overlay."""
     message = "Game Over!"
@@ -269,7 +272,7 @@ def draw_game_over(
 def draw_board(
     stdscr: curses.window,
     game: Any,
-    config: Optional[Dict[str, Any]] = None,
+    config: dict[str, Any] | None = None,
     enable_animations: bool = False,
 ) -> None:
     """Compatibility wrapper for existing main.py."""

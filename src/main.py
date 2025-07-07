@@ -1,20 +1,19 @@
 import curses
 import random
-import time
 
 from core.config import get_key_codes, load_config
-from core.save_load import load_game, save_game
 from core.constants import (
-    INITIAL_TILE_VALUE,
-    SPECIAL_TILE_VALUE,
-    SCORE_THRESHOLD_FOR_SPECIAL_TILES,
     BASE_CHANCE_OF_4,
     CHANCE_INCREASE_RATE,
-    CHANCE_SCORE_INTERVAL
+    CHANCE_SCORE_INTERVAL,
+    INITIAL_TILE_VALUE,
+    SCORE_THRESHOLD_FOR_SPECIAL_TILES,
+    SPECIAL_TILE_VALUE,
 )
+from core.save_load import load_game, save_game
 from game.game import Game
-from ui.menu import show_load_menu, show_save_menu, show_start_menu
 from ui.key_config_menu import show_key_config_menu
+from ui.menu import show_load_menu, show_save_menu, show_start_menu
 from ui.modern_display import draw_board, init_colors
 
 AUTO_SAVE_SLOT = 0
@@ -92,8 +91,10 @@ def main(stdscr: curses.window) -> None:
                         game.board.place_new_tile(INITIAL_TILE_VALUE)
                     else:
                         chance_of_4 = min(
-                            BASE_CHANCE_OF_4, 
-                            (score - SCORE_THRESHOLD_FOR_SPECIAL_TILES) // CHANCE_SCORE_INTERVAL * CHANCE_INCREASE_RATE
+                            BASE_CHANCE_OF_4,
+                            (score - SCORE_THRESHOLD_FOR_SPECIAL_TILES)
+                            // CHANCE_SCORE_INTERVAL
+                            * CHANCE_INCREASE_RATE,
                         )
                         if random.random() < chance_of_4:
                             game.board.place_new_tile(SPECIAL_TILE_VALUE)

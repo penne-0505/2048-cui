@@ -1,12 +1,12 @@
 import curses
 
 from core.constants import (
-    ESCAPE_KEY_CODE,
-    ENTER_KEY_CODES,
-    BACKSPACE_KEY_CODES,
-    ASCII_PRINTABLE_START,
     ASCII_PRINTABLE_END,
-    MAX_INPUT_LENGTH
+    ASCII_PRINTABLE_START,
+    BACKSPACE_KEY_CODES,
+    ENTER_KEY_CODES,
+    ESCAPE_KEY_CODE,
+    MAX_INPUT_LENGTH,
 )
 
 
@@ -70,7 +70,9 @@ def get_text_input(
             cursor_pos = 0
         elif key == curses.KEY_END:
             cursor_pos = len(text)
-        elif ASCII_PRINTABLE_START <= key <= ASCII_PRINTABLE_END:  # Printable characters
+        elif (
+            ASCII_PRINTABLE_START <= key <= ASCII_PRINTABLE_END
+        ):  # Printable characters
             if len(text) < max_length:
                 text = text[:cursor_pos] + chr(key) + text[cursor_pos:]
                 cursor_pos += 1

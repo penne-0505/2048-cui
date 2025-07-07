@@ -1,5 +1,4 @@
 import random
-from typing import List, Tuple
 
 from core.constants import DEFAULT_BOARD_SIZE
 
@@ -7,9 +6,9 @@ from core.constants import DEFAULT_BOARD_SIZE
 class Board:
     def __init__(self, size: int = DEFAULT_BOARD_SIZE) -> None:
         self.size: int = size
-        self.grid: List[List[int]] = [[0] * size for _ in range(size)]
+        self.grid: list[list[int]] = [[0] * size for _ in range(size)]
 
-    def get_empty_cells(self) -> List[Tuple[int, int]]:
+    def get_empty_cells(self) -> list[tuple[int, int]]:
         return [
             (r, c)
             for r in range(self.size)
@@ -28,4 +27,4 @@ class Board:
 
     def rotate(self, times: int = 1) -> None:
         for _ in range(times):
-            self.grid = [list(row) for row in zip(*self.grid[::-1])]
+            self.grid = [list(row) for row in zip(*self.grid[::-1], strict=False)]

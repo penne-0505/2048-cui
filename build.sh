@@ -17,7 +17,19 @@ fi
 
 # PyInstallerをインストール
 echo "PyInstallerをインストールしています..."
-python3 -m pip install --user pyinstaller>=5.0.0
+if [ -d "venv" ]; then
+    echo "仮想環境を使用してPyInstallerをインストールします..."
+    venv/bin/pip install pyinstaller>=5.0.0
+else
+    echo "システムにPyInstallerをインストールします..."
+    python3 -m pip install --user pyinstaller>=5.0.0 || {
+        echo "pipでのインストールに失敗しました。仮想環境を作成してください:"
+        echo "  python3 -m venv venv"
+        echo "  source venv/bin/activate"
+        echo "  pip install -e '.[build]'"
+        exit 1
+    }
+fi
 
 # ビルドディレクトリを作成
 echo "ビルドディレクトリを作成しています..."
@@ -25,7 +37,12 @@ mkdir -p build dist
 
 # PyInstallerでビルド
 echo "実行可能ファイルをビルドしています..."
-python3 -m PyInstaller --clean --onefile --distpath dist --workpath build/temp --specpath build build.spec
+if [ -d "venv" ]; then
+    echo "仮想環境のPythonを使用してビルドします..."
+    venv/bin/python -m PyInstaller --clean --onefile --distpath dist --workpath build/temp --specpath build build.spec
+else
+    python3 -m PyInstaller --clean --onefile --distpath dist --workpath build/temp --specpath build build.spec
+fi
 
 echo "✅ ビルド完了!"
 echo "📁 成果物: dist/"

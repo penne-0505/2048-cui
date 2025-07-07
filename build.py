@@ -32,16 +32,49 @@ def check_dependencies():
         print(f"PyInstaller {PyInstaller.__version__} が見つかりました")
     except ImportError:
         print("PyInstallerが見つかりません。インストールしています...")
-        run_command([sys.executable, "-m", "pip", "install", "pyinstaller>=5.0.0"])
+        
+        # 仮想環境が存在するかチェック
+        venv_path = Path("venv")
+        if venv_path.exists():
+            print("仮想環境が見つかりました。仮想環境内にインストールします...")
+            venv_pip = venv_path / "bin" / "pip"
+            if venv_pip.exists():
+                run_command([str(venv_pip), "install", "pyinstaller>=5.0.0"])
+            else:
+                print("仮想環境のpipが見つかりません。仮想環境を再作成してください。")
+                sys.exit(1)
+        else:
+            # 標準のpipでインストールを試行
+            try:
+                run_command([sys.executable, "-m", "pip", "install", "pyinstaller>=5.0.0"])
+            except subprocess.CalledProcessError:
+                print("pipでのインストールに失敗しました。")
+                print("外部管理環境の可能性があります。仮想環境を作成してください:")
+                print("  python -m venv venv")
+                print("  source venv/bin/activate")
+                print("  pip install -e '.[build]'")
+                sys.exit(1)
 
 
 def build_executable():
     """PyInstallerで実行可能ファイルをビルド"""
     print("実行可能ファイルをビルドしています...")
     
+    # 仮想環境が存在するかチェック
+    venv_path = Path("venv")
+    if venv_path.exists():
+        venv_python = venv_path / "bin" / "python"
+        if venv_python.exists():
+            print("仮想環境のPythonを使用します")
+            python_executable = str(venv_python)
+        else:
+            python_executable = sys.executable
+    else:
+        python_executable = sys.executable
+    
     # PyInstallerでビルド
     run_command([
-        sys.executable, "-m", "PyInstaller",
+        python_executable, "-m", "PyInstaller",
         "--clean",
         "--onefile",
         "--distpath", "dist",

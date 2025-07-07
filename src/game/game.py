@@ -1,13 +1,14 @@
 import time
-from typing import List, Dict, Tuple, Any
+from typing import Any
 
-from .board import Board
 from core.constants import (
     DEFAULT_BOARD_SIZE,
-    WIN_TILE_VALUE,
+    INITIAL_TILE_VALUE,
     MAX_SCORE_HISTORY_ENTRIES,
-    INITIAL_TILE_VALUE
+    WIN_TILE_VALUE,
 )
+
+from .board import Board
 
 
 class Game:
@@ -16,10 +17,14 @@ class Game:
         self.score: int = 0
         self.game_over: bool = False
         self.endless_mode: bool = False
-        self.recent_merges: List[Tuple[int, int, int]] = []  # Track recent merges for animations
+        self.recent_merges: list[
+            tuple[int, int, int]
+        ] = []  # Track recent merges for animations
         self._last_score_change: int = 0  # Track score changes for display
         self._score_change_time: float = 0  # Track when score changed
-        self._score_history: List[Dict[str, Any]] = []  # Track recent score additions for display
+        self._score_history: list[
+            dict[str, Any]
+        ] = []  # Track recent score additions for display
 
     def start(self) -> None:
         self.board.place_new_tile(INITIAL_TILE_VALUE)

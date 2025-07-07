@@ -14,7 +14,6 @@ a = Analysis(
     pathex=[str(root_dir)],
     binaries=[],
     datas=[
-        ('saves', 'saves'),
         ('config.json', '.'),
         ('src/config.json', 'src'),
     ],
