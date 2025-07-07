@@ -88,7 +88,11 @@ def build_executable():
         "build.spec"
     ])
     
-    return Path("dist/2048-cli")
+    # OSに応じて実行可能ファイルのパスを返す
+    if sys.platform.startswith('win'):
+        return Path("dist/2048-cli.exe")
+    else:
+        return Path("dist/2048-cli")
 
 
 def main():
