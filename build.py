@@ -76,10 +76,8 @@ def build_executable():
     run_command([
         python_executable, "-m", "PyInstaller",
         "--clean",
-        "--onefile",
         "--distpath", "dist",
         "--workpath", "build/temp",
-        "--specpath", "build",
         "build.spec"
     ])
     

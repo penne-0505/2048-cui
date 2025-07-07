@@ -41,9 +41,9 @@ REM PyInstallerでビルド
 echo 実行可能ファイルをビルドしています...
 if exist venv\Scripts\python.exe (
     echo 仮想環境のPythonを使用してビルドします...
-    venv\Scripts\python.exe -m PyInstaller --clean --onefile --distpath dist --workpath build\temp --specpath build build.spec
+    venv\Scripts\python.exe -m PyInstaller --clean --distpath dist --workpath build\temp build.spec
 ) else (
-    python -m PyInstaller --clean --onefile --distpath dist --workpath build\temp --specpath build build.spec
+    python -m PyInstaller --clean --distpath dist --workpath build\temp build.spec
 )
 
 if exist dist\2048-cli.exe (

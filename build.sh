@@ -39,9 +39,9 @@ mkdir -p build dist
 echo "実行可能ファイルをビルドしています..."
 if [ -d "venv" ]; then
     echo "仮想環境のPythonを使用してビルドします..."
-    venv/bin/python -m PyInstaller --clean --onefile --distpath dist --workpath build/temp --specpath build build.spec
+    venv/bin/python -m PyInstaller --clean --distpath dist --workpath build/temp build.spec
 else
-    python3 -m PyInstaller --clean --onefile --distpath dist --workpath build/temp --specpath build build.spec
+    python3 -m PyInstaller --clean --distpath dist --workpath build/temp build.spec
 fi
 
 echo "✅ ビルド完了!"

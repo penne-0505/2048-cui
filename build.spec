@@ -1,12 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import sys
+import os
 from pathlib import Path
 
 block_cipher = None
 
 # プロジェクトのルートディレクトリ
-root_dir = Path(__file__).parent
+root_dir = Path(os.getcwd())
 
 # アプリケーションのメイン設定
 a = Analysis(
