@@ -13,32 +13,35 @@ def run_command(cmd, cwd=None):
     """コマンドを実行し、エラーがあれば終了"""
     print(f"実行中: {' '.join(cmd)}")
     result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-    
+
     if result.stdout:
         print("--- stdout ---")
         print(result.stdout)
     if result.stderr:
         print("--- stderr ---")
         print(result.stderr)
-        
+
     if result.returncode != 0:
-        print(f"エラー: コマンドが非ゼロ終了コード {result.returncode} で終了しました。")
+        print(
+            f"エラー: コマンドが非ゼロ終了コード {result.returncode} で終了しました。"
+        )
         sys.exit(result.returncode)
-    
+
     return result
 
 
 def check_dependencies():
     """必要な依存関係をチェック"""
     print("依存関係をチェックしています...")
-    
+
     # PyInstallerをチェック
     try:
         import PyInstaller
+
         print(f"PyInstaller {PyInstaller.__version__} が見つかりました")
     except ImportError:
         print("PyInstallerが見つかりません。インストールしています...")
-        
+
         # 仮想環境が存在するかチェック
         venv_path = Path("venv")
         if venv_path.exists():
@@ -52,7 +55,9 @@ def check_dependencies():
         else:
             # 標準のpipでインストールを試行
             try:
-                run_command([sys.executable, "-m", "pip", "install", "pyinstaller>=5.0.0"])
+                run_command(
+                    [sys.executable, "-m", "pip", "install", "pyinstaller>=5.0.0"]
+                )
             except subprocess.CalledProcessError:
                 print("pipでのインストールに失敗しました。")
                 print("外部管理環境の可能性があります。仮想環境を作成してください:")
@@ -65,7 +70,7 @@ def check_dependencies():
 def build_executable():
     """PyInstallerで実行可能ファイルをビルド"""
     print("実行可能ファイルをビルドしています...")
-    
+
     # 仮想環境が存在するかチェック
     venv_path = Path("venv")
     if venv_path.exists():
@@ -77,19 +82,26 @@ def build_executable():
             python_executable = sys.executable
     else:
         python_executable = sys.executable
-    
+
     # PyInstallerでビルド
-    run_command([
-        python_executable, "-m", "PyInstaller",
-        "--clean",
-        "--log-level", "DEBUG",
-        "--distpath", "dist",
-        "--workpath", "build/temp",
-        "build.spec"
-    ])
-    
+    run_command(
+        [
+            python_executable,
+            "-m",
+            "PyInstaller",
+            "--clean",
+            "--log-level",
+            "DEBUG",
+            "--distpath",
+            "dist",
+            "--workpath",
+            "build/temp",
+            "build.spec",
+        ]
+    )
+
     # OSに応じて実行可能ファイルのパスを返す
-    if sys.platform.startswith('win'):
+    if sys.platform.startswith("win"):
         return Path("dist/2048-cli.exe")
     else:
         return Path("dist/2048-cli")
@@ -99,23 +111,23 @@ def main():
     """メイン処理"""
     print("2048-CLI ビルドスクリプト")
     print("=" * 40)
-    
+
     # 依存関係をチェック
     check_dependencies()
-    
+
     # ビルドディレクトリを作成
     Path("build").mkdir(exist_ok=True)
     Path("dist").mkdir(exist_ok=True)
-    
+
     # 実行可能ファイルをビルド
     exe_path = build_executable()
-    
+
     if exe_path.exists():
         print(f"✓ 実行可能ファイルが作成されました: {exe_path}")
     else:
         print("✗ 実行可能ファイルの作成に失敗しました")
         sys.exit(1)
-    
+
     print("\nビルド完了!")
     print("distディレクトリを確認してください。")
 

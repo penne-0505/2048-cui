@@ -101,7 +101,7 @@ def save_game(
 
         return True
 
-    except (OSError, PermissionError, json.JSONEncodeError):
+    except (OSError, PermissionError, json.JSONDecodeError):
         # Log the error or handle it appropriately
         # For now, we silently fail but return False to indicate failure
         return False

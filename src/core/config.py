@@ -56,7 +56,7 @@ def save_config(config: dict[str, Any]) -> bool:
         with open(CONFIG_FILE, "w") as f:
             json.dump(config, f, indent=2)
         return True
-    except (OSError, PermissionError, json.JSONEncodeError):
+    except (OSError, PermissionError, json.JSONDecodeError):
         # File access or JSON encoding errors
         return False
     except Exception:
