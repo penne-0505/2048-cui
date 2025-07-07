@@ -52,12 +52,10 @@ def configure_movement_keys(stdscr: curses.window, config: dict[str, Any]) -> No
     """Configure movement key bindings."""
     while True:
         options = []
-        for action in ["up", "down", "left", "right"]:
-            keys = config["keys"]["movement"][action]
+        for act in ["up", "down", "left", "right"]:
+            keys = config["keys"]["movement"][act]
             key_display = ", ".join(get_key_display_name(key) for key in keys)
-            options.append(
-                f"{get_action_display_name('movement', action)}: {key_display}"
-            )
+            options.append(f"{get_action_display_name('movement', act)}: {key_display}")
 
         options.append("Back")
 
@@ -67,13 +65,13 @@ def configure_movement_keys(stdscr: curses.window, config: dict[str, Any]) -> No
             break
 
         # Extract action from choice
-        action = None
+        action: str | None = None
         for i, act in enumerate(["up", "down", "left", "right"]):
             if choice.startswith(get_action_display_name("movement", act)):
                 action = act
                 break
 
-        if action:
+        if action is not None:
             configure_single_action(stdscr, config, "movement", action)
 
 
@@ -81,12 +79,10 @@ def configure_action_keys(stdscr: curses.window, config: dict[str, Any]) -> None
     """Configure action key bindings."""
     while True:
         options = []
-        for action in ["quit", "save", "return_to_title", "load", "change_theme"]:
-            keys = config["keys"]["actions"][action]
+        for act in ["quit", "save", "return_to_title", "load", "change_theme"]:
+            keys = config["keys"]["actions"][act]
             key_display = ", ".join(get_key_display_name(key) for key in keys)
-            options.append(
-                f"{get_action_display_name('actions', action)}: {key_display}"
-            )
+            options.append(f"{get_action_display_name('actions', act)}: {key_display}")
 
         options.append("Back")
 
@@ -96,13 +92,13 @@ def configure_action_keys(stdscr: curses.window, config: dict[str, Any]) -> None
             break
 
         # Extract action from choice
-        action = None
+        action: str | None = None
         for act in ["quit", "save", "return_to_title", "load", "change_theme"]:
             if choice.startswith(get_action_display_name("actions", act)):
                 action = act
                 break
 
-        if action:
+        if action is not None:
             configure_single_action(stdscr, config, "actions", action)
 
 
@@ -202,9 +198,12 @@ def confirm_reset_keys(stdscr: curses.window) -> bool:
 
 def reset_to_defaults(config: dict[str, Any]) -> bool:
     """Reset key bindings to default values. Returns True if successful."""
+    from typing import cast
+
     from core.config import DEFAULT_CONFIG
 
-    config["keys"] = DEFAULT_CONFIG["keys"].copy()
+    default_keys = cast(dict[str, Any], DEFAULT_CONFIG["keys"])
+    config["keys"] = default_keys.copy()
     return save_config(config)
 
 

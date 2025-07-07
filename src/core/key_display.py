@@ -56,7 +56,7 @@ def format_key_list_for_display(keys: list[str]) -> str:
 
 def generate_cheatsheet_data(config: dict[str, Any]) -> dict[str, list[dict[str, str]]]:
     """Generate cheatsheet data from config automatically."""
-    cheatsheet = {"movement": [], "actions": []}
+    cheatsheet: dict[str, list[dict[str, str]]] = {"movement": [], "actions": []}
 
     # Process movement keys
     if "movement" in config["keys"]:
