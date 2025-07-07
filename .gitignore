@@ -6,3 +6,5 @@ src/2048_cli.egg-info/
 *.pyc
 __init__.py
 saves/
+build/
+dist/
