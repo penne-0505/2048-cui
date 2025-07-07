@@ -6,13 +6,14 @@ authors = [
     {name = "penne",email = "penne0505pp@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.11,<3.12"
+requires-python = ">=3.11,<3.13"
 dependencies = [
 ]
 
+
 [project.optional-dependencies]
 build = [
-    "pyinstaller>=5.0.0",
+    "pyinstaller>=6.0.0",
 ]
 dev = [
     "ruff>=0.1.0",
@@ -25,9 +26,12 @@ dev = [
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry]
+package-mode = false
+
 # Ruff configuration
 [tool.ruff]
-target-version = "py312"
+target-version = "py311"
 line-length = 88
 exclude = [
     ".git",
@@ -65,7 +69,7 @@ known-first-party = ["core", "game", "ui"]
 
 # MyPy configuration
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.11"
 mypy_path = "src"
 warn_return_any = false
 warn_unused_configs = false
