@@ -97,10 +97,4 @@ clean:
 
 # Build the application
 build: clean
-	@if command -v poetry >/dev/null 2>&1; then \
-		poetry run python build.py; \
-	elif [ -f venv/bin/python ]; then \
-		venv/bin/python build.py; \
-	else \
-		python build.py; \
-	fi
+	python build.py

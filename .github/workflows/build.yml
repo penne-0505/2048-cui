@@ -17,7 +17,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.13'
+        python-version: '3.12'
     
     - name: Install dependencies
       run: |
@@ -26,48 +26,9 @@ jobs:
         
     - name: Build Linux executable
       run: |
-        python -m PyInstaller --clean --onefile --distpath dist --workpath build/temp --specpath build build.spec
+        python build.py
         
-    - name: Build AppImage
-      run: |
-        # AppImageの構造を作成
-        mkdir -p build/2048-cli.AppDir/usr/bin
-        mkdir -p build/2048-cli.AppDir/usr/share/applications
-        mkdir -p build/2048-cli.AppDir/usr/share/pixmaps
-        
-        # 実行可能ファイルをコピー
-        cp dist/2048-cli build/2048-cli.AppDir/usr/bin/
-        chmod +x build/2048-cli.AppDir/usr/bin/2048-cli
-        
-        # デスクトップエントリを作成
-        cat > build/2048-cli.AppDir/usr/share/applications/2048-cli.desktop << 'EOF'
-        [Desktop Entry]
-        Name=2048-CLI
-        Comment=Modern terminal-based 2048 puzzle game
-        Exec=2048-cli
-        Icon=2048-cli
-        Type=Application
-        Categories=Game;
-        Terminal=true
-        EOF
-        
-        # AppRunスクリプトを作成
-        cat > build/2048-cli.AppDir/AppRun << 'EOF'
-        #!/bin/bash
-        cd "$(dirname "$0")"
-        exec ./usr/bin/2048-cli "$@"
-        EOF
-        chmod +x build/2048-cli.AppDir/AppRun
-        
-        # デスクトップファイルをルートにコピー
-        cp build/2048-cli.AppDir/usr/share/applications/2048-cli.desktop build/2048-cli.AppDir/
-        
-        # AppImageToolをダウンロード
-        wget -O build/appimagetool-x86_64.AppImage https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-        chmod +x build/appimagetool-x86_64.AppImage
-        
-        # AppImageを作成
-        build/appimagetool-x86_64.AppImage build/2048-cli.AppDir dist/2048-cli-x86_64.AppImage
+    
         
     - name: Upload Linux artifacts
       uses: actions/upload-artifact@v4
@@ -75,7 +36,6 @@ jobs:
         name: linux-builds
         path: |
           dist/2048-cli
-          dist/2048-cli-x86_64.AppImage
 
   build-windows:
     runs-on: windows-latest
@@ -86,7 +46,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.13'
+        python-version: '3.12'
     
     - name: Install dependencies
       run: |
@@ -95,7 +55,7 @@ jobs:
         
     - name: Build Windows executable
       run: |
-        python -m PyInstaller --clean --onefile --distpath dist --workpath build/temp --specpath build build.spec
+        python build.py
         
     - name: Upload Windows artifacts
       uses: actions/upload-artifact@v4
@@ -119,13 +79,12 @@ jobs:
       with:
         files: |
           linux-builds/2048-cli
-          linux-builds/2048-cli-x86_64.AppImage
           windows-builds/2048-cli.exe
         body: |
           ## 2048-CLI Release
           
           ### Downloads
-          - **Linux**: `2048-cli` (バイナリ) または `2048-cli-x86_64.AppImage` (AppImage)
+          - **Linux**: `2048-cli` (バイナリ)
           - **Windows**: `2048-cli.exe`
           
           ### インストール方法
@@ -138,10 +97,6 @@ jobs:
           # Linux バイナリ
           chmod +x 2048-cli
           ./2048-cli
-          
-          # AppImage
-          chmod +x 2048-cli-x86_64.AppImage
-          ./2048-cli-x86_64.AppImage
           
           # Windows
           2048-cli.exe
