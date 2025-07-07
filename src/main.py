@@ -1,10 +1,20 @@
 import curses
 import random
+import time
 
 from core.config import get_key_codes, load_config
 from core.save_load import load_game, save_game
+from core.constants import (
+    INITIAL_TILE_VALUE,
+    SPECIAL_TILE_VALUE,
+    SCORE_THRESHOLD_FOR_SPECIAL_TILES,
+    BASE_CHANCE_OF_4,
+    CHANCE_INCREASE_RATE,
+    CHANCE_SCORE_INTERVAL
+)
 from game.game import Game
 from ui.menu import show_load_menu, show_save_menu, show_start_menu
+from ui.key_config_menu import show_key_config_menu
 from ui.modern_display import draw_board, init_colors
 
 AUTO_SAVE_SLOT = 0
@@ -25,13 +35,19 @@ def main(stdscr: curses.window) -> None:
         if choice is None:  # User quit from start menu
             break
 
+        if choice == "key_config":
+            show_key_config_menu(stdscr, config)
+            # Reload key mappings after configuration change
+            key_map, action_keys = get_key_codes(config)
+            continue
+
         game = Game()
 
         if choice == "new":
             game.start()
         elif choice == "load":
-            slot = show_load_menu(stdscr)
-            if slot is None or not load_game(game, slot):
+            slot = show_load_menu(stdscr, config)
+            if slot is None or not load_game(game, slot, config):
                 # Fallback to new game if load fails or user quits load menu
                 game.start()
 
@@ -52,13 +68,14 @@ def main(stdscr: curses.window) -> None:
                 result = show_save_menu(stdscr)
                 if result is not None:
                     slot, name = result
-                    save_game(game, slot, name)
-                    # Optional: Add a message to confirm save
+                    success = save_game(game, slot, name, config)
+                    # TODO: Show save confirmation/error message to user
+                    # For now, we silently handle the success/failure
                 continue
 
             if key in action_keys.get("load", []):  # Load game
-                slot = show_load_menu(stdscr)
-                if slot is not None and load_game(game, slot):
+                slot = show_load_menu(stdscr, config)
+                if slot is not None and load_game(game, slot, config):
                     # Game loaded successfully, continue with loaded state
                     pass
                 continue
@@ -71,14 +88,17 @@ def main(stdscr: curses.window) -> None:
                 if game.move(direction):
                     # Add new tile based on score
                     score = game.score
-                    if score < 2000:
-                        game.board.place_new_tile(2)
+                    if score < SCORE_THRESHOLD_FOR_SPECIAL_TILES:
+                        game.board.place_new_tile(INITIAL_TILE_VALUE)
                     else:
-                        chance_of_4 = min(0.5, (score - 2000) // 2000 * 0.05)
+                        chance_of_4 = min(
+                            BASE_CHANCE_OF_4, 
+                            (score - SCORE_THRESHOLD_FOR_SPECIAL_TILES) // CHANCE_SCORE_INTERVAL * CHANCE_INCREASE_RATE
+                        )
                         if random.random() < chance_of_4:
-                            game.board.place_new_tile(4)
+                            game.board.place_new_tile(SPECIAL_TILE_VALUE)
                         else:
-                            game.board.place_new_tile(2)
+                            game.board.place_new_tile(INITIAL_TILE_VALUE)
 
                 # Check for game over
                 if game.is_game_over():
