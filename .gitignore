@@ -8,3 +8,6 @@ __init__.py
 saves/
 build/
 dist/
+config.json
+*.egg
+*.egg-info
