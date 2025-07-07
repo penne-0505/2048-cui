@@ -1,5 +1,8 @@
 poetry.lock
-/__pycache__/
+.mypy_cache/
+.ruff_cache/
+src/__pycache__/
+src/2048_cli.egg-info/
 *.pyc
 __init__.py
 saves/
