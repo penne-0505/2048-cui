@@ -1,12 +1,15 @@
 import curses
+from typing import Any, List, Optional, Tuple, Dict
+
+from core.constants import ENTER_KEY_CODES, ESCAPE_KEY_CODE
 
 from core.save_load import MANUAL_SAVE_SLOTS, get_all_save_slots_info, get_save_slots
 from ui.input import get_text_input
 
 
 def select_from_menu(
-    stdscr: curses.window, title: str, options: list[str]
-) -> str | None:
+    stdscr: curses.window, title: str, options: List[str]
+) -> Optional[str]:
     stdscr.clear()
     height, width = stdscr.getmaxyx()
     stdscr.addstr(0, 1, title)
@@ -25,27 +28,30 @@ def select_from_menu(
             current_option = (current_option - 1) % len(options)
         elif key == curses.KEY_DOWN:
             current_option = (current_option + 1) % len(options)
-        elif key == curses.KEY_ENTER or key in [10, 13]:
+        elif key == curses.KEY_ENTER or key in ENTER_KEY_CODES:
             return options[current_option]
-        elif key in [ord("q"), 27]:
+        elif key in [ord("q"), ESCAPE_KEY_CODE]:
             return None
 
 
-def show_start_menu(stdscr: curses.window) -> str | None:
+def show_start_menu(stdscr: curses.window) -> Optional[str]:
     options = ["New Game"]
     if get_save_slots():
         options.append("Load Game")
+    options.append("Key Configuration")
 
     choice = select_from_menu(stdscr, "Welcome to 2048!", options)
     if choice == "New Game":
         return "new"
     elif choice == "Load Game":
         return "load"
+    elif choice == "Key Configuration":
+        return "key_config"
     return None
 
 
-def show_load_menu(stdscr: curses.window) -> int | None:
-    slots_info = get_all_save_slots_info()
+def show_load_menu(stdscr: curses.window, config: Optional[Dict[str, Any]] = None) -> Optional[int]:
+    slots_info = get_all_save_slots_info(config)
     if not slots_info:
         return None
 
@@ -65,9 +71,9 @@ def show_load_menu(stdscr: curses.window) -> int | None:
     return None
 
 
-def show_save_menu(stdscr: curses.window) -> tuple[int, str] | None:
+def show_save_menu(stdscr: curses.window, config: Optional[Dict[str, Any]] = None) -> Optional[Tuple[int, str]]:
     # Get existing save slot info to show current names
-    slots_info = get_all_save_slots_info()
+    slots_info = get_all_save_slots_info(config)
     existing_slots = {info["slot"]: info["name"] for info in slots_info}
 
     options = []

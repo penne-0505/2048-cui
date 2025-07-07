@@ -4,12 +4,22 @@ Based on mm.png design - clean, floating tiles, minimal UI.
 """
 
 import curses
-from typing import Any
+import time
+from typing import Any, Dict, Optional
 
 from core.modern_themes import (
     get_tile_color_pair,
     get_ui_color_pairs,
     init_modern_colors,
+)
+from core.constants import (
+    SCORE_CHANGE_DISPLAY_DURATION,
+    SCORE_FADE_RECENT_THRESHOLD,
+    SCORE_FADE_MEDIUM_THRESHOLD,
+    TILE_WIDTH,
+    TILE_HEIGHT,
+    TILE_SPACING,
+    DEFAULT_BOARD_SIZE
 )
 
 
@@ -19,7 +29,7 @@ def init_display() -> None:
 
 
 def draw_modern_game(
-    stdscr: curses.window, game: Any, config: dict[str, Any] | None = None
+    stdscr: curses.window, game: Any, config: Optional[Dict[str, Any]] = None
 ) -> None:
     """
     Draw the game using modern minimalist design.
@@ -39,7 +49,8 @@ def draw_modern_game(
 
     # Calculate board position (centered) for bordered tiles
     board_start_y = 4  # Leave space for header
-    board_width = 30  # 4 tiles * 6 chars + 3 gaps * 2 chars = 24 + 6 = 30
+    board_width = (DEFAULT_BOARD_SIZE * TILE_WIDTH + 
+                   (DEFAULT_BOARD_SIZE - 1) * TILE_SPACING)
     # Center the board properly
     board_start_x = max(2, (width - board_width) // 2)
 
@@ -57,7 +68,7 @@ def draw_modern_game(
 
 
 def draw_score_header(
-    stdscr: curses.window, game: Any, ui_colors: dict[str, int], width: int
+    stdscr: curses.window, game: Any, ui_colors: Dict[str, int], width: int
 ) -> None:
     """Draw score display with total on top-right and history below."""
     try:
@@ -88,7 +99,7 @@ def draw_score_header(
 
 
 def draw_score_history(
-    stdscr: curses.window, game: Any, ui_colors: dict[str, int], width: int
+    stdscr: curses.window, game: Any, ui_colors: Dict[str, int], width: int
 ) -> None:
     """Draw recent score additions in descending order."""
     score_history = getattr(game, "_score_history", [])
@@ -96,13 +107,11 @@ def draw_score_history(
     if not score_history:
         return
 
-    import time
-
     current_time = time.time()
 
-    # Filter recent changes (last 10 seconds) and sort by time (newest first)
+    # Filter recent changes and sort by time (newest first)
     recent_changes = [
-        change for change in score_history if current_time - change["time"] < 10.0
+        change for change in score_history if current_time - change["time"] < SCORE_CHANGE_DISPLAY_DURATION
     ]
     recent_changes.sort(key=lambda x: x["time"], reverse=True)
 
@@ -113,10 +122,10 @@ def draw_score_history(
 
         # Calculate fade effect based on age
         age = current_time - change["time"]
-        if age < 2.0:
+        if age < SCORE_FADE_RECENT_THRESHOLD:
             # Recent - bright
             color = curses.color_pair(ui_colors["score_accent"]) | curses.A_BOLD
-        elif age < 5.0:
+        elif age < SCORE_FADE_MEDIUM_THRESHOLD:
             # Medium - normal
             color = curses.color_pair(ui_colors["score_accent"])
         else:
@@ -137,14 +146,14 @@ def draw_score_history(
 def draw_floating_tiles(
     stdscr: curses.window, game: Any, start_y: int, start_x: int
 ) -> None:
-    """Draw 4x4 grid of floating tiles with borders."""
-    for row in range(4):
-        for col in range(4):
+    """Draw grid of floating tiles with borders."""
+    for row in range(DEFAULT_BOARD_SIZE):
+        for col in range(DEFAULT_BOARD_SIZE):
             tile_value = game.board.grid[row][col]
 
             # Calculate tile position for bordered tiles
-            tile_y = start_y + row * 4  # 4 lines per tile (3 content + 1 spacing)
-            tile_x = start_x + col * 8  # 8 chars per tile (6 content + 2 spacing)
+            tile_y = start_y + row * (TILE_HEIGHT + 1)  # tile height + spacing
+            tile_x = start_x + col * (TILE_WIDTH + TILE_SPACING)  # tile width + spacing
 
             draw_single_tile(stdscr, tile_value, tile_y, tile_x)
 
@@ -156,35 +165,39 @@ def draw_single_tile(stdscr: curses.window, value: int, y: int, x: int) -> None:
     if value == 0:
         # Empty tile - subtle border outline
         try:
-            stdscr.addstr(y, x, "╭────╮", curses.color_pair(color_pair))
-            stdscr.addstr(y + 1, x, "│    │", curses.color_pair(color_pair))
-            stdscr.addstr(y + 2, x, "╰────╯", curses.color_pair(color_pair))
+            border_line = "─" * (TILE_WIDTH - 2)
+            spaces_line = " " * (TILE_WIDTH - 2)
+            stdscr.addstr(y, x, f"╭{border_line}╮", curses.color_pair(color_pair))
+            stdscr.addstr(y + 1, x, f"│{spaces_line}│", curses.color_pair(color_pair))
+            stdscr.addstr(y + 2, x, f"╰{border_line}╯", curses.color_pair(color_pair))
         except curses.error:
             pass
     else:
         # Tile with value - bordered box with centered number
         value_str = str(value)
-        padding = (4 - len(value_str)) // 2
+        content_width = TILE_WIDTH - 2  # Account for border characters
+        padding = (content_width - len(value_str)) // 2
         left_pad = " " * padding
-        right_pad = " " * (4 - len(value_str) - padding)
+        right_pad = " " * (content_width - len(value_str) - padding)
 
         middle_content = f"│{left_pad}{value_str}{right_pad}│"
 
         try:
+            border_line = "─" * (TILE_WIDTH - 2)
             # Top border
-            stdscr.addstr(y, x, "╭────╮", curses.color_pair(color_pair))
+            stdscr.addstr(y, x, f"╭{border_line}╮", curses.color_pair(color_pair))
             # Middle with value
             stdscr.addstr(
                 y + 1, x, middle_content, curses.color_pair(color_pair) | curses.A_BOLD
             )
             # Bottom border
-            stdscr.addstr(y + 2, x, "╰────╯", curses.color_pair(color_pair))
+            stdscr.addstr(y + 2, x, f"╰{border_line}╯", curses.color_pair(color_pair))
         except curses.error:
             pass
 
 
 def draw_simple_controls(
-    stdscr: curses.window, ui_colors: dict[str, int], height: int, width: int
+    stdscr: curses.window, ui_colors: Dict[str, int], height: int, width: int
 ) -> None:
     """Draw minimal control information at bottom."""
     controls = ["Back/Restart", "↑ ← ↓ →", "Quit"]
@@ -224,7 +237,7 @@ def draw_simple_controls(
 
 
 def draw_game_over(
-    stdscr: curses.window, ui_colors: dict[str, int], height: int, width: int
+    stdscr: curses.window, ui_colors: Dict[str, int], height: int, width: int
 ) -> None:
     """Draw game over overlay."""
     message = "Game Over!"
@@ -256,7 +269,7 @@ def draw_game_over(
 def draw_board(
     stdscr: curses.window,
     game: Any,
-    config: dict[str, Any] | None = None,
+    config: Optional[Dict[str, Any]] = None,
     enable_animations: bool = False,
 ) -> None:
     """Compatibility wrapper for existing main.py."""
