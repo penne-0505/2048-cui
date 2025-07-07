@@ -102,7 +102,7 @@ def get_key_codes(
             key_map[key_code] = direction
 
     # Action keys
-    action_keys = {}
+    action_keys: dict[str, list[int]] = {}
     for action, keys in config["keys"]["actions"].items():
         action_keys[action] = []
         for key in keys:

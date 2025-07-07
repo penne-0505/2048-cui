@@ -4,11 +4,25 @@ Clean, contemporary visual design with floating tiles.
 """
 
 import curses
+from typing import TypedDict
 
 from .constants import COLOR_PAIR_START_TILE, COLOR_PAIR_START_UI, MAX_TILE_VALUE
 
+
+class ColorConfig(TypedDict):
+    fg: int
+    bg: int
+
+
+class Theme(TypedDict):
+    name: str
+    description: str
+    tile_colors: dict[int, ColorConfig]
+    ui_colors: dict[str, int]
+
+
 # Modern minimalist theme inspired by mm.png
-MODERN_THEME = {
+MODERN_THEME: Theme = {
     "name": "Modern Minimalist",
     "description": "Clean, contemporary design with floating tiles",
     # Tile colors - border-style design (foreground colors only)
