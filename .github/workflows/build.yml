@@ -1,0 +1,150 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ master, main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller>=5.0.0
+        
+    - name: Build Linux executable
+      run: |
+        python -m PyInstaller --clean --onefile --distpath dist --workpath build/temp --specpath build build.spec
+        
+    - name: Build AppImage
+      run: |
+        # AppImageの構造を作成
+        mkdir -p build/2048-cli.AppDir/usr/bin
+        mkdir -p build/2048-cli.AppDir/usr/share/applications
+        mkdir -p build/2048-cli.AppDir/usr/share/pixmaps
+        
+        # 実行可能ファイルをコピー
+        cp dist/2048-cli build/2048-cli.AppDir/usr/bin/
+        chmod +x build/2048-cli.AppDir/usr/bin/2048-cli
+        
+        # デスクトップエントリを作成
+        cat > build/2048-cli.AppDir/usr/share/applications/2048-cli.desktop << 'EOF'
+        [Desktop Entry]
+        Name=2048-CLI
+        Comment=Modern terminal-based 2048 puzzle game
+        Exec=2048-cli
+        Icon=2048-cli
+        Type=Application
+        Categories=Game;
+        Terminal=true
+        EOF
+        
+        # AppRunスクリプトを作成
+        cat > build/2048-cli.AppDir/AppRun << 'EOF'
+        #!/bin/bash
+        cd "$(dirname "$0")"
+        exec ./usr/bin/2048-cli "$@"
+        EOF
+        chmod +x build/2048-cli.AppDir/AppRun
+        
+        # デスクトップファイルをルートにコピー
+        cp build/2048-cli.AppDir/usr/share/applications/2048-cli.desktop build/2048-cli.AppDir/
+        
+        # AppImageToolをダウンロード
+        wget -O build/appimagetool-x86_64.AppImage https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x build/appimagetool-x86_64.AppImage
+        
+        # AppImageを作成
+        build/appimagetool-x86_64.AppImage build/2048-cli.AppDir dist/2048-cli-x86_64.AppImage
+        
+    - name: Upload Linux artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux-builds
+        path: |
+          dist/2048-cli
+          dist/2048-cli-x86_64.AppImage
+
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller>=5.0.0
+        
+    - name: Build Windows executable
+      run: |
+        python -m PyInstaller --clean --onefile --distpath dist --workpath build/temp --specpath build build.spec
+        
+    - name: Upload Windows artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-builds
+        path: dist/2048-cli.exe
+
+  release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          linux-builds/2048-cli
+          linux-builds/2048-cli-x86_64.AppImage
+          windows-builds/2048-cli.exe
+        body: |
+          ## 2048-CLI Release
+          
+          ### Downloads
+          - **Linux**: `2048-cli` (バイナリ) または `2048-cli-x86_64.AppImage` (AppImage)
+          - **Windows**: `2048-cli.exe`
+          
+          ### インストール方法
+          1. 対応するファイルをダウンロード
+          2. 実行権限を付与（Linux/macOS）
+          3. ターミナルで実行
+          
+          ### 使用方法
+          ```bash
+          # Linux バイナリ
+          chmod +x 2048-cli
+          ./2048-cli
+          
+          # AppImage
+          chmod +x 2048-cli-x86_64.AppImage
+          ./2048-cli-x86_64.AppImage
+          
+          # Windows
+          2048-cli.exe
+          ```
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,47 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+    
+    - name: Run ruff linter
+      run: |
+        ruff check src/
+    
+    - name: Run ruff formatter check
+      run: |
+        ruff format --check src/
+    
+    - name: Run mypy type checker
+      run: |
+        mypy src/
+    
+    - name: Check import sorting
+      run: |
+        ruff check --select I src/
+    
+    - name: Run security checks (if any security issues found)
+      run: |
+        # Basic security check - ensure no obvious secrets or dangerous patterns
+        echo "Checking for potential security issues..."
+        ! grep -r "password\|secret\|token" src/ --include="*.py" || (echo "Potential secrets found!" && exit 1)
+        echo "Basic security check passed"
