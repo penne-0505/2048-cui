@@ -12,14 +12,20 @@ from pathlib import Path
 def run_command(cmd, cwd=None):
     """コマンドを実行し、エラーがあれば終了"""
     print(f"実行中: {' '.join(cmd)}")
-    try:
-        result = subprocess.run(cmd, check=True, cwd=cwd, capture_output=True, text=True)
+    result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    
+    if result.stdout:
+        print("--- stdout ---")
         print(result.stdout)
-        return result
-    except subprocess.CalledProcessError as e:
-        print(f"エラー: {e}")
-        print(f"stderr: {e.stderr}")
-        sys.exit(1)
+    if result.stderr:
+        print("--- stderr ---")
+        print(result.stderr)
+        
+    if result.returncode != 0:
+        print(f"エラー: コマンドが非ゼロ終了コード {result.returncode} で終了しました。")
+        sys.exit(result.returncode)
+    
+    return result
 
 
 def check_dependencies():
@@ -76,6 +82,7 @@ def build_executable():
     run_command([
         python_executable, "-m", "PyInstaller",
         "--clean",
+        "--log-level", "DEBUG",
         "--distpath", "dist",
         "--workpath", "build/temp",
         "build.spec"
