@@ -17,6 +17,9 @@ a = Analysis(
     datas=[
         ('config.json', '.'),
         ('src/config.json', 'src'),
+        ('src/core', 'src/core'),
+        ('src/game', 'src/game'),
+        ('src/ui', 'src/ui'),
     ],
     hiddenimports=[],
     hookspath=[],
