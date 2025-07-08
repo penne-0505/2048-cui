@@ -11,3 +11,4 @@ dist/
 config.json
 *.egg
 *.egg-info
+.vscode/
