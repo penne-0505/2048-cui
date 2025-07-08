@@ -2,7 +2,15 @@ import curses
 import os
 from typing import Any
 
-from core.config import get_save_path, save_config, set_save_path
+from core.config import (
+    get_animation_speed,
+    get_save_path,
+    is_animations_enabled,
+    save_config,
+    set_animation_speed,
+    set_animations_enabled,
+    set_save_path,
+)
 from core.constants import ESCAPE_KEY_CODE
 from core.key_config import (
     add_key_binding,
@@ -18,33 +26,21 @@ from ui.menu import select_from_menu
 
 
 def show_key_config_menu(stdscr: curses.window, config: dict[str, Any]) -> None:
-    """Show the main key configuration menu."""
+    """Show the key configuration menu (keys only)."""
     while True:
         options = [
             "Movement Keys",
             "Action Keys",
-            "Save Path Settings",
-            "Reset to Defaults",
-            "Back to Main Menu",
+            "Back",
         ]
 
-        choice = select_from_menu(stdscr, "Key Configuration", options)
+        choice = select_from_menu(stdscr, "Key Settings", options)
 
         if choice == "Movement Keys":
             configure_movement_keys(stdscr, config)
         elif choice == "Action Keys":
             configure_action_keys(stdscr, config)
-        elif choice == "Save Path Settings":
-            configure_save_path(stdscr, config)
-        elif choice == "Reset to Defaults":
-            if confirm_reset_keys(stdscr):
-                if reset_to_defaults(config):
-                    show_message(stdscr, "Key bindings reset to defaults!")
-                else:
-                    show_message(
-                        stdscr, "Key bindings reset but failed to save configuration"
-                    )
-        elif choice == "Back to Main Menu" or choice is None:
+        elif choice == "Back" or choice is None:
             break
 
 
@@ -319,3 +315,62 @@ def confirm_reset_save_path(stdscr: curses.window) -> bool:
     options = ["Yes", "No"]
     choice = select_from_menu(stdscr, "Reset save path to default?", options)
     return choice == "Yes"
+
+
+def configure_animations(stdscr: curses.window, config: dict[str, Any]) -> None:
+    """Configure animation settings."""
+    while True:
+        enabled = is_animations_enabled(config)
+        speed = get_animation_speed(config)
+        
+        options = [
+            f"Animations: {'Enabled' if enabled else 'Disabled'}",
+            f"Animation Speed: {speed:.1f}x",
+            "Back",
+        ]
+        
+        choice = select_from_menu(stdscr, "Animation Settings", options)
+        
+        if choice == "Back" or choice is None:
+            break
+        elif choice.startswith("Animations:"):
+            toggle_animations(stdscr, config)
+        elif choice.startswith("Animation Speed:"):
+            configure_animation_speed(stdscr, config)
+
+
+def toggle_animations(stdscr: curses.window, config: dict[str, Any]) -> None:
+    """Toggle animation on/off."""
+    current_state = is_animations_enabled(config)
+    new_state = not current_state
+    
+    if set_animations_enabled(config, new_state):
+        state_text = "enabled" if new_state else "disabled"
+        show_message(stdscr, f"Animations {state_text}!")
+    else:
+        show_message(stdscr, "Failed to save animation settings")
+
+
+def configure_animation_speed(stdscr: curses.window, config: dict[str, Any]) -> None:
+    """Configure animation speed."""
+    current_speed = get_animation_speed(config)
+    speed_options = ["0.5x (Slow)", "1.0x (Normal)", "1.5x (Fast)", "2.0x (Very Fast)", "Back"]
+    
+    choice = select_from_menu(stdscr, f"Current Speed: {current_speed:.1f}x", speed_options)
+    
+    if choice == "Back" or choice is None:
+        return
+    
+    speed_map = {
+        "0.5x (Slow)": 0.5,
+        "1.0x (Normal)": 1.0,
+        "1.5x (Fast)": 1.5,
+        "2.0x (Very Fast)": 2.0,
+    }
+    
+    new_speed = speed_map.get(choice)
+    if new_speed is not None:
+        if set_animation_speed(config, new_speed):
+            show_message(stdscr, f"Animation speed set to {new_speed:.1f}x!")
+        else:
+            show_message(stdscr, "Failed to save animation speed setting")

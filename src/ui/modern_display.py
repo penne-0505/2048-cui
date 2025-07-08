@@ -5,8 +5,9 @@ Based on mm.png design - clean, floating tiles, minimal UI.
 
 import curses
 import time
-from typing import Any
+from typing import Any, Optional
 
+from core.config import get_animation_fps, get_animation_speed, is_animations_enabled
 from core.constants import (
     DEFAULT_BOARD_SIZE,
     SCORE_CHANGE_DISPLAY_DURATION,
@@ -21,11 +22,23 @@ from core.modern_themes import (
     get_ui_color_pairs,
     init_modern_colors,
 )
+from ui.animation import AnimationManager
+
+
+# Global animation manager instance
+_animation_manager: Optional[AnimationManager] = None
 
 
 def init_display() -> None:
     """Initialize the modern display system."""
+    global _animation_manager
     init_modern_colors()
+    _animation_manager = AnimationManager()
+
+
+def get_animation_manager() -> Optional[AnimationManager]:
+    """Get the global animation manager instance."""
+    return _animation_manager
 
 
 def draw_modern_game(
@@ -39,10 +52,23 @@ def draw_modern_game(
     - Center: 4x4 floating tile grid
     - Bottom: Simple controls
     """
+    global _animation_manager
+    
     stdscr.clear()
     height, width = stdscr.getmaxyx()
 
     ui_colors = get_ui_color_pairs()
+    
+    # Initialize and configure animation manager if needed
+    if config and _animation_manager:
+        animations_enabled = is_animations_enabled(config)
+        if animations_enabled:
+            _animation_manager.set_fps(get_animation_fps(config))
+            _animation_manager.set_speed_multiplier(get_animation_speed(config))
+            if not _animation_manager.running:
+                _animation_manager.start()
+        elif _animation_manager.running:
+            _animation_manager.stop()
 
     # Draw header (score)
     draw_score_header(stdscr, game, ui_colors, width)
@@ -55,8 +81,9 @@ def draw_modern_game(
     # Center the board properly
     board_start_x = max(2, (width - board_width) // 2)
 
-    # Draw floating tile grid
-    draw_floating_tiles(stdscr, game, board_start_y, board_start_x)
+    # Draw floating tile grid with animation support
+    animations_enabled = config and is_animations_enabled(config)
+    draw_floating_tiles(stdscr, game, board_start_y, board_start_x, animations_enabled)
 
     # Draw footer controls
     draw_simple_controls(stdscr, ui_colors, height, width)
@@ -147,23 +174,63 @@ def draw_score_history(
 
 
 def draw_floating_tiles(
-    stdscr: curses.window, game: Any, start_y: int, start_x: int
+    stdscr: curses.window, game: Any, start_y: int, start_x: int, animations_enabled: bool = False
 ) -> None:
-    """Draw grid of floating tiles with borders."""
+    """Draw grid of floating tiles with borders and animation support."""
+    global _animation_manager
+    
     for row in range(DEFAULT_BOARD_SIZE):
         for col in range(DEFAULT_BOARD_SIZE):
             tile_value = game.board.grid[row][col]
 
-            # Calculate tile position for bordered tiles
-            tile_y = start_y + row * (TILE_HEIGHT + 1)  # tile height + spacing
-            tile_x = start_x + col * (TILE_WIDTH + TILE_SPACING)  # tile width + spacing
+            # Calculate base tile position for bordered tiles
+            base_tile_y = start_y + row * (TILE_HEIGHT + 1)  # tile height + spacing
+            base_tile_x = start_x + col * (TILE_WIDTH + TILE_SPACING)  # tile width + spacing
 
-            draw_single_tile(stdscr, tile_value, tile_y, tile_x)
+            # Check for animation data if animations are enabled
+            actual_y, actual_x = base_tile_y, base_tile_x
+            scale = 1.0
+            alpha = 1.0
+            
+            if animations_enabled and _animation_manager:
+                tile_id = f"{row}_{col}"
+                render_data = _animation_manager.get_tile_render_data(tile_id)
+                if render_data:
+                    # Apply animation transformations
+                    anim_pos = render_data['position']
+                    scale = render_data['scale']
+                    alpha = render_data['alpha']
+                    
+                    # Convert logical position to screen coordinates
+                    actual_y = start_y + int(anim_pos.y * (TILE_HEIGHT + 1))
+                    actual_x = start_x + int(anim_pos.x * (TILE_WIDTH + TILE_SPACING))
+
+            # Only draw non-empty tiles or tiles with animation data
+            if tile_value > 0 or (animations_enabled and scale != 1.0):
+                draw_single_tile(stdscr, tile_value, actual_y, actual_x, scale, alpha)
+            elif tile_value == 0:
+                # Draw empty tile placeholder
+                draw_single_tile(stdscr, 0, actual_y, actual_x)
 
 
-def draw_single_tile(stdscr: curses.window, value: int, y: int, x: int) -> None:
-    """Draw a single tile with border outline."""
+def draw_single_tile(stdscr: curses.window, value: int, y: int, x: int, scale: float = 1.0, alpha: float = 1.0) -> None:
+    """Draw a single tile with border outline and animation effects."""
     color_pair = get_tile_color_pair(value)
+    
+    # Apply scale effect for animations (simple approximation)
+    if scale != 1.0:
+        # For scale effects, we can adjust the tile width/height or use different characters
+        # This is a simplified implementation - in a full version you might skip drawing
+        # parts of the tile or use different characters to simulate scaling
+        if scale < 0.8:
+            # Very small - draw a minimal representation
+            try:
+                if value > 0:
+                    value_str = str(value)
+                    stdscr.addstr(y + 1, x + 2, value_str[:2], curses.color_pair(color_pair))
+                return
+            except curses.error:
+                return
 
     if value == 0:
         # Empty tile - subtle border outline
@@ -187,12 +254,21 @@ def draw_single_tile(stdscr: curses.window, value: int, y: int, x: int) -> None:
 
         try:
             border_line = "─" * (TILE_WIDTH - 2)
+            # Apply alpha effect for fading (simplified - in terminal this is limited)
+            color_attr = curses.color_pair(color_pair)
+            if alpha < 0.7:
+                # Dim the tile for fade effect
+                color_attr = curses.color_pair(color_pair)
+            elif scale > 1.1:
+                # Brighten for emphasis during merge
+                color_attr = curses.color_pair(color_pair) | curses.A_BOLD
+            else:
+                color_attr = curses.color_pair(color_pair) | curses.A_BOLD
+                
             # Top border
             stdscr.addstr(y, x, f"╭{border_line}╮", curses.color_pair(color_pair))
             # Middle with value
-            stdscr.addstr(
-                y + 1, x, middle_content, curses.color_pair(color_pair) | curses.A_BOLD
-            )
+            stdscr.addstr(y + 1, x, middle_content, color_attr)
             # Bottom border
             stdscr.addstr(y + 2, x, f"╰{border_line}╯", curses.color_pair(color_pair))
         except curses.error:
