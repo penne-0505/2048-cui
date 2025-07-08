@@ -38,5 +38,14 @@
     }
   },
   "theme": "modern",
-  "save_path": null
+  "language": "en",
+  "save_path": null,
+  "animations": {
+    "enabled": false,
+    "speed": 1.0,
+    "fps": 60
+  },
+  "ui": {
+    "emoji_enabled": false
+  }
 }

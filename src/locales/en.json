@@ -1,0 +1,151 @@
+{
+  "menu": {
+    "welcome_title": "Welcome to 2048!",
+    "new_game": "New Game",
+    "load_game": "Load Game",
+    "settings": "Settings",
+    "emoji": {
+      "new_game": "🎮 New Game",
+      "load_game": "📁 Load Game",
+      "settings": "⚙️ Settings"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "key_settings": "Key Settings",
+    "visual_effects": "Visual Effects",
+    "file_settings": "File Settings",
+    "language_settings": "Language Settings",
+    "reset_defaults": "Reset to Defaults",
+    "back_main": "Back to Main Menu",
+    "back": "Back",
+    "emoji": {
+      "title": "⚙️ Settings",
+      "key_settings": "⌨️ Key Settings",
+      "visual_effects": "✨ Visual Effects",
+      "file_settings": "📂 File Settings",
+      "language_settings": "🌐 Language Settings",
+      "reset_defaults": "🔄 Reset to Defaults",
+      "back_main": "⬅️ Back to Main Menu",
+      "back": "⬅️ Back"
+    }
+  },
+  "keys": {
+    "title": "Key Settings",
+    "movement_keys": "Movement Keys",
+    "action_keys": "Action Keys",
+    "emoji": {
+      "title": "⌨️ Key Settings",
+      "movement_keys": "🎯 Movement Keys",
+      "action_keys": "⚡ Action Keys"
+    },
+    "actions": {
+      "up": "Up",
+      "down": "Down",
+      "left": "Left",
+      "right": "Right",
+      "quit": "Quit",
+      "save": "Save",
+      "load": "Load",
+      "return_title": "Return to Title",
+      "change_theme": "Change Theme"
+    },
+    "configure": {
+      "prompt": "Press the key you want to use for {}:",
+      "success": "Key for {} changed to {}!",
+      "invalid": "Invalid key! Please try again.",
+      "cancel": "Configuration cancelled."
+    }
+  },
+  "visual": {
+    "title": "Visual Effects",
+    "animation_settings": "Animation Settings",
+    "emoji_display": "Emoji Display",
+    "emoji": {
+      "title": "✨ Visual Effects",
+      "animation_settings": "🎬 Animation Settings",
+      "emoji_display": "😀 Emoji Display"
+    },
+    "animation": {
+      "title": "Animation Settings",
+      "enabled": "Animations",
+      "speed": "Animation Speed",
+      "values": {
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "slow": "Slow (0.5x)",
+        "normal": "Normal (1.0x)",
+        "fast": "Fast (1.5x)",
+        "very_fast": "Very Fast (2.0x)"
+      }
+    },
+    "emoji": {
+      "title": "Emoji Display Settings",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    }
+  },
+  "file": {
+    "title": "File Settings",
+    "save_path": "Save Path Settings",
+    "emoji": {
+      "title": "📂 File Settings",
+      "save_path": "💾 Save Path Settings"
+    },
+    "path": {
+      "title": "Save Path Configuration",
+      "current": "Current save path",
+      "default": "Default path",
+      "custom": "Custom path",
+      "prompt": "Enter new save path (leave empty for default):",
+      "success": "Save path updated successfully!",
+      "error": "Failed to update save path"
+    }
+  },
+  "language": {
+    "title": "Language Settings",
+    "current": "Current Language",
+    "select": "Select Language",
+    "english": "English",
+    "japanese": "日本語",
+    "emoji": {
+      "title": "🌐 Language Settings"
+    },
+    "success": "Language changed successfully!",
+    "error": "Failed to change language"
+  },
+  "messages": {
+    "confirm_reset": "Are you sure you want to reset ALL settings to defaults?\\n(This includes keys, animations, and file paths)",
+    "reset_success": "All settings reset to defaults!",
+    "reset_error": "Settings reset but failed to save configuration",
+    "animation_enabled": "Animations enabled!",
+    "animation_disabled": "Animations disabled!",
+    "animation_speed_changed": "Animation speed changed!",
+    "emoji_enabled": "Emoji display enabled!",
+    "emoji_disabled": "Emoji display disabled!",
+    "save_success": "Game saved successfully!",
+    "save_error": "Failed to save game",
+    "load_success": "Game loaded successfully!",
+    "load_error": "Failed to load game",
+    "config_save_error": "Failed to save settings",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "game": {
+    "score": "Score",
+    "game_over": "Game Over",
+    "in_progress": "In Progress",
+    "slot": "Slot",
+    "date": "Date",
+    "empty": "[Empty]",
+    "save": {
+      "title": "Select a slot to save:",
+      "name_prompt": "Enter name for save:",
+      "name_current": "Enter name for save (current: '{}'):"
+    },
+    "load": {
+      "title": "Select a save slot to load:",
+      "no_saves": "No save files found"
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "menu": {
+    "welcome_title": "2048へようこそ！",
+    "new_game": "新しいゲーム",
+    "load_game": "ゲームをロード",
+    "settings": "設定",
+    "emoji": {
+      "new_game": "🎮 新しいゲーム",
+      "load_game": "📁 ゲームをロード",
+      "settings": "⚙️ 設定"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "key_settings": "キー設定",
+    "visual_effects": "視覚効果",
+    "file_settings": "ファイル設定",
+    "language_settings": "言語設定",
+    "reset_defaults": "デフォルトに戻す",
+    "back_main": "メインメニューに戻る",
+    "back": "戻る",
+    "emoji": {
+      "title": "⚙️ 設定",
+      "key_settings": "⌨️ キー設定",
+      "visual_effects": "✨ 視覚効果",
+      "file_settings": "📂 ファイル設定",
+      "language_settings": "🌐 言語設定",
+      "reset_defaults": "🔄 デフォルトに戻す",
+      "back_main": "⬅️ メインメニューに戻る",
+      "back": "⬅️ 戻る"
+    }
+  },
+  "keys": {
+    "title": "キー設定",
+    "movement_keys": "移動キー",
+    "action_keys": "アクションキー",
+    "emoji": {
+      "title": "⌨️ キー設定",
+      "movement_keys": "🎯 移動キー",
+      "action_keys": "⚡ アクションキー"
+    },
+    "actions": {
+      "up": "上",
+      "down": "下",
+      "left": "左",
+      "right": "右",
+      "quit": "終了",
+      "save": "保存",
+      "load": "ロード",
+      "return_title": "タイトルに戻る",
+      "change_theme": "テーマ変更"
+    },
+    "configure": {
+      "prompt": "{}に使用するキーを押してください:",
+      "success": "{}のキーを{}に変更しました！",
+      "invalid": "無効なキーです！もう一度試してください。",
+      "cancel": "設定をキャンセルしました。"
+    }
+  },
+  "visual": {
+    "title": "視覚効果",
+    "animation_settings": "アニメーション設定",
+    "emoji_display": "絵文字表示",
+    "emoji": {
+      "title": "✨ 視覚効果",
+      "animation_settings": "🎬 アニメーション設定",
+      "emoji_display": "😀 絵文字表示"
+    },
+    "animation": {
+      "title": "アニメーション設定",
+      "enabled": "アニメーション",
+      "speed": "アニメーション速度",
+      "values": {
+        "enabled": "有効",
+        "disabled": "無効",
+        "slow": "遅い (0.5x)",
+        "normal": "標準 (1.0x)",
+        "fast": "速い (1.5x)",
+        "very_fast": "非常に速い (2.0x)"
+      }
+    },
+    "emoji": {
+      "title": "絵文字表示設定",
+      "enabled": "有効",
+      "disabled": "無効"
+    }
+  },
+  "file": {
+    "title": "ファイル設定",
+    "save_path": "保存パス設定",
+    "emoji": {
+      "title": "📂 ファイル設定",
+      "save_path": "💾 保存パス設定"
+    },
+    "path": {
+      "title": "保存パス設定",
+      "current": "現在の保存パス",
+      "default": "デフォルトパス",
+      "custom": "カスタムパス",
+      "prompt": "新しい保存パスを入力してください（空にするとデフォルト）:",
+      "success": "保存パスを正常に更新しました！",
+      "error": "保存パスの更新に失敗しました"
+    }
+  },
+  "language": {
+    "title": "言語設定",
+    "current": "現在の言語",
+    "select": "言語を選択",
+    "english": "English",
+    "japanese": "日本語",
+    "emoji": {
+      "title": "🌐 言語設定"
+    },
+    "success": "言語を正常に変更しました！",
+    "error": "言語の変更に失敗しました"
+  },
+  "messages": {
+    "confirm_reset": "すべての設定をデフォルトに戻してもよろしいですか？\\n（キー、アニメーション、ファイルパスが含まれます）",
+    "reset_success": "すべての設定をデフォルトに戻しました！",
+    "reset_error": "設定をリセットしましたが、設定の保存に失敗しました",
+    "animation_enabled": "アニメーションを有効にしました！",
+    "animation_disabled": "アニメーションを無効にしました！",
+    "animation_speed_changed": "アニメーション速度を変更しました！",
+    "emoji_enabled": "絵文字表示を有効にしました！",
+    "emoji_disabled": "絵文字表示を無効にしました！",
+    "save_success": "ゲームを正常に保存しました！",
+    "save_error": "ゲームの保存に失敗しました",
+    "load_success": "ゲームを正常にロードしました！",
+    "load_error": "ゲームのロードに失敗しました",
+    "config_save_error": "設定の保存に失敗しました",
+    "yes": "はい",
+    "no": "いいえ"
+  },
+  "game": {
+    "score": "スコア",
+    "game_over": "ゲームオーバー",
+    "in_progress": "進行中",
+    "slot": "スロット",
+    "date": "日付",
+    "empty": "[空]",
+    "save": {
+      "title": "保存するスロットを選択してください:",
+      "name_prompt": "保存名を入力してください:",
+      "name_current": "保存名を入力してください（現在: '{}'）:"
+    },
+    "load": {
+      "title": "ロードするセーブスロットを選択してください:",
+      "no_saves": "セーブファイルが見つかりません"
+    }
+  }
+}

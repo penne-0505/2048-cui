@@ -12,7 +12,7 @@ from core.constants import (
 )
 from core.save_load import load_game, save_game
 from game.game import Game
-from ui.key_config_menu import show_key_config_menu
+from ui.settings_menu import show_settings_menu
 from ui.menu import show_load_menu, show_save_menu, show_start_menu
 from ui.modern_display import draw_board, init_colors
 
@@ -25,19 +25,25 @@ def main(stdscr: curses.window) -> None:
 
     # Load configuration
     config = load_config()
+    
+    # Initialize i18n system with config settings
+    from core.config import initialize_i18n_from_config
+    initialize_i18n_from_config(config)
+    
     init_colors()  # Modern display uses fixed modern theme
     key_map, action_keys = get_key_codes(config)
 
     while True:  # Main application loop
         # Game start menu
-        choice = show_start_menu(stdscr)
+        choice = show_start_menu(stdscr, config)
         if choice is None:  # User quit from start menu
             break
 
-        if choice == "key_config":
-            show_key_config_menu(stdscr, config)
-            # Reload key mappings after configuration change
+        if choice == "settings":
+            show_settings_menu(stdscr, config)
+            # Reload key mappings and i18n after configuration change
             key_map, action_keys = get_key_codes(config)
+            initialize_i18n_from_config(config)
             continue
 
         game = Game()
