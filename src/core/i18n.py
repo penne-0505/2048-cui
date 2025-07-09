@@ -5,7 +5,7 @@ Provides translation functionality with support for multiple languages.
 
 import json
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Default language
 DEFAULT_LANGUAGE = "en"
@@ -29,18 +29,18 @@ class I18nManager:
         for locale_file in self._locales_dir.glob("*.json"):
             language_code = locale_file.stem
             try:
-                with open(locale_file, "r", encoding="utf-8") as f:
+                with open(locale_file, encoding="utf-8") as f:
                     self._translations[language_code] = json.load(f)
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 print(f"Warning: Failed to load locale file {locale_file}: {e}")
 
     def set_language(self, language_code: str) -> bool:
         """
         Set the current language.
-        
+
         Args:
             language_code: Language code (e.g., 'en', 'ja')
-            
+
         Returns:
             True if language was successfully set, False otherwise
         """
@@ -65,14 +65,14 @@ class I18nManager:
         """Check if emoji display is enabled."""
         return self._emoji_enabled
 
-    def _get_nested_value(self, data: dict[str, Any], key_path: str) -> Optional[Any]:
+    def _get_nested_value(self, data: dict[str, Any], key_path: str) -> Any | None:
         """
         Get a nested value from dictionary using dot notation.
-        
+
         Args:
             data: Dictionary to search in
             key_path: Dot-separated key path (e.g., 'menu.new_game')
-            
+
         Returns:
             The value if found, None otherwise
         """
@@ -86,15 +86,15 @@ class I18nManager:
 
         return current
 
-    def t(self, key: str, use_emoji: Optional[bool] = None, **kwargs) -> str:
+    def t(self, key: str, use_emoji: bool | None = None, **kwargs) -> str:
         """
         Translate a key to the current language.
-        
+
         Args:
             key: Translation key (supports dot notation, e.g., 'menu.new_game')
             use_emoji: Override emoji setting for this translation
             **kwargs: Format arguments for string formatting
-            
+
         Returns:
             Translated string, or the key itself if translation not found
         """
@@ -122,13 +122,13 @@ class I18nManager:
         # Fallback to key if no translation found
         return key
 
-    def _get_translation(self, key: str) -> Optional[str]:
+    def _get_translation(self, key: str) -> str | None:
         """
         Get translation for a key from current or fallback language.
-        
+
         Args:
             key: Translation key
-            
+
         Returns:
             Translation string or None if not found
         """
@@ -143,12 +143,16 @@ class I18nManager:
                     section = parts[0]
                     key_name = parts[-1]
                     emoji_path = f"{section}.emoji.{key_name}"
-                    result = self._get_nested_value(self._translations[self._current_language], emoji_path)
+                    result = self._get_nested_value(
+                        self._translations[self._current_language], emoji_path
+                    )
                     if result:
                         return result
 
             # Check regular key
-            result = self._get_nested_value(self._translations[self._current_language], key)
+            result = self._get_nested_value(
+                self._translations[self._current_language], key
+            )
             if result:
                 return result
 
@@ -165,7 +169,9 @@ class I18nManager:
                     section = parts[0]
                     key_name = parts[-1]
                     emoji_path = f"{section}.emoji.{key_name}"
-                    result = self._get_nested_value(self._translations[DEFAULT_LANGUAGE], emoji_path)
+                    result = self._get_nested_value(
+                        self._translations[DEFAULT_LANGUAGE], emoji_path
+                    )
                     if result:
                         return result
 
@@ -179,10 +185,10 @@ class I18nManager:
     def get_language_display_name(self, language_code: str) -> str:
         """
         Get the display name for a language code.
-        
+
         Args:
             language_code: Language code
-            
+
         Returns:
             Display name for the language
         """
@@ -210,15 +216,15 @@ def get_i18n_manager() -> I18nManager:
     return _i18n_manager
 
 
-def t(key: str, use_emoji: Optional[bool] = None, **kwargs) -> str:
+def t(key: str, use_emoji: bool | None = None, **kwargs) -> str:
     """
     Convenience function for translation.
-    
+
     Args:
         key: Translation key
         use_emoji: Override emoji setting for this translation
         **kwargs: Format arguments for string formatting
-        
+
     Returns:
         Translated string
     """
@@ -228,10 +234,10 @@ def t(key: str, use_emoji: Optional[bool] = None, **kwargs) -> str:
 def set_language(language_code: str) -> bool:
     """
     Set the current language.
-    
+
     Args:
         language_code: Language code
-        
+
     Returns:
         True if successful, False otherwise
     """
