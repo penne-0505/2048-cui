@@ -38,14 +38,14 @@
     }
   },
   "theme": "modern",
-  "language": "en",
+  "language": "ja",
   "save_path": null,
   "animations": {
-    "enabled": false,
+    "enabled": true,
     "speed": 1.0,
     "fps": 60
   },
   "ui": {
-    "emoji_enabled": false
+    "emoji_enabled": true
   }
 }
