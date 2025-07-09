@@ -10,17 +10,11 @@
 
 #### Linux
 
-- **binary**: `2048-cli`
-- **AppImage**: `2048-cli-x86_64.AppImage`
+- **バイナリ**: `2048-cli`
 
 ```bash
-# binaryの場合
 chmod +x 2048-cli
 ./2048-cli
-
-# AppImageの場合
-chmod +x 2048-cli-x86_64.AppImage
-./2048-cli-x86_64.AppImage
 ```
 
 #### Windows
@@ -319,7 +313,7 @@ make build
 
 #### 出力形式
 
-- **Linux**: バイナリ実行可能ファイル + AppImage
+- **Linux**: バイナリ実行可能ファイル
 - **Windows**: .exe実行可能ファイル
 - **macOS**: バイナリ実行可能ファイル（将来: .appバンドル）
 
