@@ -51,10 +51,20 @@
       "change_theme": "Change Theme"
     },
     "configure": {
+      "title": "Configure {}",
       "prompt": "Press the key you want to use for {}:",
       "success": "Key for {} changed to {}!",
       "invalid": "Invalid key! Please try again.",
-      "cancel": "Configuration cancelled."
+      "cancel": "Configuration cancelled.",
+      "add_new_key": "Add New Key",
+      "remove_key": "Remove: {}",
+      "bind_prompt": "Press the key you want to bind, or ESC to cancel",
+      "safe_keys_only": "Only safe keys from the whitelist are allowed",
+      "key_not_safe": "Key '{}' is not in the safe bindable keys list",
+      "added_binding": "Added key binding: {}",
+      "removed_binding": "Removed key binding: {}",
+      "binding_failed": "Key binding added but failed to save configuration",
+      "remove_failed": "Key binding removed but failed to save configuration"
     }
   },
   "visual": {
@@ -73,10 +83,10 @@
       "values": {
         "enabled": "Enabled",
         "disabled": "Disabled",
-        "slow": "Slow (0.5x)",
-        "normal": "Normal (1.0x)",
-        "fast": "Fast (1.5x)",
-        "very_fast": "Very Fast (2.0x)"
+        "slow": "0.5x (Slow)",
+        "normal": "1.0x (Normal)",
+        "fast": "1.5x (Fast)",
+        "very_fast": "2.0x (Very Fast)"
       }
     },
     "emoji": {
@@ -93,13 +103,22 @@
       "save_path": "💾 Save Path Settings"
     },
     "path": {
-      "title": "Save Path Configuration",
+      "title": "Save Path Settings",
       "current": "Current save path",
       "default": "Default path",
       "custom": "Custom path",
-      "prompt": "Enter new save path (leave empty for default):",
+      "set_custom": "Set Custom Path",
+      "reset_default": "Reset to Default",
+      "prompt": "Enter custom save path (or press Escape to cancel):",
       "success": "Save path updated successfully!",
-      "error": "Failed to update save path"
+      "error": "Failed to update save path",
+      "empty_path": "Empty path! Setting to default.",
+      "invalid_path": "Invalid path: {}",
+      "path_set": "Save path set to: {}",
+      "path_reset": "Save path reset to default!",
+      "confirm_reset": "Reset save path to default?",
+      "save_failed": "Path set but failed to save configuration",
+      "reset_failed": "Save path reset but failed to save configuration"
     }
   },
   "language": {
@@ -116,11 +135,15 @@
   },
   "messages": {
     "confirm_reset": "Are you sure you want to reset ALL settings to defaults?\\n(This includes keys, animations, and file paths)",
+    "confirm_reset_keys": "Are you sure you want to reset all key bindings to defaults?",
     "reset_success": "All settings reset to defaults!",
     "reset_error": "Settings reset but failed to save configuration",
     "animation_enabled": "Animations enabled!",
     "animation_disabled": "Animations disabled!",
     "animation_speed_changed": "Animation speed changed!",
+    "animation_save_failed": "Failed to save animation settings",
+    "animation_speed_set": "Animation speed set to {}x!",
+    "animation_speed_save_failed": "Failed to save animation speed setting",
     "emoji_enabled": "Emoji display enabled!",
     "emoji_disabled": "Emoji display disabled!",
     "save_success": "Game saved successfully!",
@@ -129,7 +152,25 @@
     "load_error": "Failed to load game",
     "config_save_error": "Failed to save settings",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "back": "Back"
+  },
+  "ui": {
+    "controls": {
+      "back_restart": "Back/Restart",
+      "arrows": "↑ ← ↓ →",
+      "quit": "Quit",
+      "game_controls": "{}: Return   {}: Save   {}: Load   {}: Theme"
+    },
+    "input": {
+      "confirm_cancel": "Press Enter to confirm, Esc to cancel",
+      "backspace_help": "Use Backspace to delete characters",
+      "any_key_continue": "Press any key to continue...",
+      "key_bind_prompt": "Press the key you want to bind, or ESC to cancel",
+      "safe_keys_only": "Only safe keys from the whitelist are allowed"
+    }
   },
   "game": {
     "score": "Score",
