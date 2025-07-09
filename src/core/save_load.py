@@ -39,7 +39,7 @@ def get_default_save_path() -> str:
 
 def get_save_dir(config: dict[str, Any] | None = None) -> str:
     """Get the save directory from config or use default."""
-    if config and "save_path" in config:
+    if config and "save_path" in config and config["save_path"] is not None:
         return config["save_path"]
 
     # Check for legacy saves directory for backward compatibility
