@@ -22,6 +22,9 @@ from core.modern_themes import (
     get_ui_color_pairs,
     init_modern_colors,
 )
+from core.i18n import t
+from core.config import load_config
+from core.key_config import get_key_display_name
 from ui.animation import AnimationManager
 
 
@@ -279,7 +282,11 @@ def draw_simple_controls(
     stdscr: curses.window, ui_colors: dict[str, int], height: int, width: int
 ) -> None:
     """Draw minimal control information at bottom."""
-    controls = ["Back/Restart", "↑ ← ↓ →", "Quit"]
+    controls = [
+        t("ui.controls.back_restart"),
+        t("ui.controls.arrows"),
+        t("ui.controls.quit")
+    ]
 
     # Position controls at bottom, accounting for bordered tile height
     control_y = height - 4
@@ -302,9 +309,17 @@ def draw_simple_controls(
             control_y, right_x, controls[2], curses.color_pair(ui_colors["controls"])
         )
 
-        # Additional controls on next line
+        # Additional controls on next line - dynamic key display
         control_y += 1
-        extras = "r: Return   h: Save   l: Load   t: Theme"
+        config = load_config()
+        return_key = get_key_display_name(config["keys"]["actions"]["return_to_title"][0])
+        save_key = get_key_display_name(config["keys"]["actions"]["save"][0])
+        load_key = get_key_display_name(config["keys"]["actions"]["load"][0])
+        theme_key = get_key_display_name(config["keys"]["actions"]["change_theme"][0])
+        
+        extras = t("ui.controls.game_controls", 
+                   return_key, save_key, load_key, theme_key)
+        
         if len(extras) < width - 4:
             extra_x = (width - len(extras)) // 2
             stdscr.addstr(
@@ -319,7 +334,7 @@ def draw_game_over(
     stdscr: curses.window, ui_colors: dict[str, int], height: int, width: int
 ) -> None:
     """Draw game over overlay."""
-    message = "Game Over!"
+    message = t("game.game_over")
 
     try:
         msg_x = (width - len(message)) // 2

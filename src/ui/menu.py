@@ -1,6 +1,7 @@
 import curses
 from typing import Any
 
+from core.config import is_emoji_enabled
 from core.constants import ENTER_KEY_CODES, ESCAPE_KEY_CODE
 from core.i18n import t
 from core.save_load import MANUAL_SAVE_SLOTS, get_all_save_slots_info, get_save_slots
@@ -35,23 +36,27 @@ def select_from_menu(
 
 
 def show_start_menu(stdscr: curses.window, config: Any = None) -> str | None:
-    from core.config import is_emoji_enabled
-    
     emoji_on = config and is_emoji_enabled(config)
-    
+
     options = [t("menu.new_game", use_emoji=emoji_on)]
     if get_save_slots():
         options.append(t("menu.load_game", use_emoji=emoji_on))
     options.append(t("menu.settings", use_emoji=emoji_on))
 
     choice = select_from_menu(stdscr, t("menu.welcome_title"), options)
-    
+
     # Parse choice regardless of emoji
-    if choice and (t("menu.new_game") in choice or t("menu.new_game", use_emoji=True) in choice):
+    if choice and (
+        t("menu.new_game") in choice or t("menu.new_game", use_emoji=True) in choice
+    ):
         return "new"
-    elif choice and (t("menu.load_game") in choice or t("menu.load_game", use_emoji=True) in choice):
+    elif choice and (
+        t("menu.load_game") in choice or t("menu.load_game", use_emoji=True) in choice
+    ):
         return "load"
-    elif choice and (t("menu.settings") in choice or t("menu.settings", use_emoji=True) in choice):
+    elif choice and (
+        t("menu.settings") in choice or t("menu.settings", use_emoji=True) in choice
+    ):
         return "settings"
     return None
 

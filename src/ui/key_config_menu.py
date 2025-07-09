@@ -12,6 +12,7 @@ from core.config import (
     set_save_path,
 )
 from core.constants import ESCAPE_KEY_CODE
+from core.i18n import t
 from core.key_config import (
     add_key_binding,
     code_to_key,
@@ -29,18 +30,18 @@ def show_key_config_menu(stdscr: curses.window, config: dict[str, Any]) -> None:
     """Show the key configuration menu (keys only)."""
     while True:
         options = [
-            "Movement Keys",
-            "Action Keys",
-            "Back",
+            t("keys.movement_keys"),
+            t("keys.action_keys"),
+            t("settings.back"),
         ]
 
-        choice = select_from_menu(stdscr, "Key Settings", options)
+        choice = select_from_menu(stdscr, t("keys.title"), options)
 
-        if choice == "Movement Keys":
+        if choice == t("keys.movement_keys"):
             configure_movement_keys(stdscr, config)
-        elif choice == "Action Keys":
+        elif choice == t("keys.action_keys"):
             configure_action_keys(stdscr, config)
-        elif choice == "Back" or choice is None:
+        elif choice == t("settings.back") or choice is None:
             break
 
 
@@ -53,11 +54,11 @@ def configure_movement_keys(stdscr: curses.window, config: dict[str, Any]) -> No
             key_display = ", ".join(get_key_display_name(key) for key in keys)
             options.append(f"{get_action_display_name('movement', act)}: {key_display}")
 
-        options.append("Back")
+        options.append(t("settings.back"))
 
-        choice = select_from_menu(stdscr, "Movement Key Configuration", options)
+        choice = select_from_menu(stdscr, t("keys.movement_keys"), options)
 
-        if choice == "Back" or choice is None:
+        if choice == t("settings.back") or choice is None:
             break
 
         # Extract action from choice
@@ -80,11 +81,11 @@ def configure_action_keys(stdscr: curses.window, config: dict[str, Any]) -> None
             key_display = ", ".join(get_key_display_name(key) for key in keys)
             options.append(f"{get_action_display_name('actions', act)}: {key_display}")
 
-        options.append("Back")
+        options.append(t("settings.back"))
 
-        choice = select_from_menu(stdscr, "Action Key Configuration", options)
+        choice = select_from_menu(stdscr, t("keys.action_keys"), options)
 
-        if choice == "Back" or choice is None:
+        if choice == t("settings.back") or choice is None:
             break
 
         # Extract action from choice
@@ -108,33 +109,34 @@ def configure_single_action(
 
         # Show current bindings
         for key in keys:
-            options.append(f"Remove: {get_key_display_name(key)}")
+            options.append(t("keys.configure.remove_key", get_key_display_name(key)))
 
-        options.extend(["Add New Key", "Back"])
+        options.extend([t("keys.configure.add_new_key"), t("messages.back")])
 
-        title = f"Configure {get_action_display_name(category, action)}"
+        title = t("keys.configure.title", get_action_display_name(category, action))
         choice = select_from_menu(stdscr, title, options)
 
-        if choice == "Back" or choice is None:
+        if choice == t("messages.back") or choice is None:
             break
-        elif choice == "Add New Key":
+        elif choice == t("keys.configure.add_new_key"):
             add_new_key_binding(stdscr, config, category, action)
-        elif choice.startswith("Remove: "):
-            key_to_remove = choice.replace("Remove: ", "")
+        elif choice.startswith(t("keys.configure.remove_key", "").split(":")[0]):
+            # Extract the key name from the choice
+            key_display_name = choice.split(": ", 1)[1]
             # Find the actual key string (reverse lookup from display name)
             for key in keys:
-                if get_key_display_name(key) == key_to_remove:
+                if get_key_display_name(key) == key_display_name:
                     success, error = remove_key_binding(config, category, action, key)
                     if success:
                         if save_config(config):
                             show_message(
                                 stdscr,
-                                f"Removed key binding: {get_key_display_name(key)}",
+                                t("keys.configure.removed_binding", get_key_display_name(key)),
                             )
                         else:
                             show_message(
                                 stdscr,
-                                "Key binding removed but failed to save configuration",
+                                t("keys.configure.remove_failed"),
                             )
                     else:
                         show_message(stdscr, f"Error: {error}")
@@ -150,8 +152,8 @@ def add_new_key_binding(
 
     # Show instructions
     stdscr.addstr(0, 1, f"Add key for {get_action_display_name(category, action)}")
-    stdscr.addstr(2, 1, "Press the key you want to bind, or ESC to cancel")
-    stdscr.addstr(3, 1, "Only safe keys from the whitelist are allowed")
+    stdscr.addstr(2, 1, t("keys.configure.bind_prompt"))
+    stdscr.addstr(3, 1, t("keys.configure.safe_keys_only"))
     stdscr.refresh()
 
     # Get key press
@@ -167,7 +169,7 @@ def add_new_key_binding(
     if not is_key_safe(key_str):
         show_message(
             stdscr,
-            f"Key '{get_key_display_name(key_str)}' is not in the safe bindable keys list",
+            t("keys.configure.key_not_safe", get_key_display_name(key_str)),
         )
         return
 
@@ -176,20 +178,20 @@ def add_new_key_binding(
 
     if success:
         if save_config(config):
-            show_message(stdscr, f"Added key binding: {get_key_display_name(key_str)}")
+            show_message(stdscr, t("keys.configure.added_binding", get_key_display_name(key_str)))
         else:
-            show_message(stdscr, "Key binding added but failed to save configuration")
+            show_message(stdscr, t("keys.configure.binding_failed"))
     else:
         show_message(stdscr, f"Error: {error}")
 
 
 def confirm_reset_keys(stdscr: curses.window) -> bool:
     """Confirm if user wants to reset key bindings to defaults."""
-    options = ["Yes", "No"]
+    options = [t("messages.yes"), t("messages.no")]
     choice = select_from_menu(
-        stdscr, "Are you sure you want to reset all key bindings to defaults?", options
+        stdscr, t("messages.confirm_reset_keys"), options
     )
-    return choice == "Yes"
+    return choice == t("messages.yes")
 
 
 def reset_to_defaults(config: dict[str, Any]) -> bool:
@@ -209,7 +211,7 @@ def show_message(stdscr: curses.window, message: str) -> None:
     height, width = stdscr.getmaxyx()
 
     stdscr.addstr(height // 2, 1, message)
-    stdscr.addstr(height // 2 + 2, 1, "Press any key to continue...")
+    stdscr.addstr(height // 2 + 2, 1, t("ui.input.any_key_continue"))
     stdscr.refresh()
 
     stdscr.getch()
@@ -221,11 +223,11 @@ def show_key_bindings_help(stdscr: curses.window, config: dict[str, Any]) -> Non
     height, width = stdscr.getmaxyx()
 
     y = 0
-    stdscr.addstr(y, 1, "Current Key Bindings:")
+    stdscr.addstr(y, 1, "Current Key Bindings:")  # This can stay as is for help display
     y += 2
 
     # Movement keys
-    stdscr.addstr(y, 1, "Movement:")
+    stdscr.addstr(y, 1, "Movement:")  # This can stay as is for help display
     y += 1
     for action in ["up", "down", "left", "right"]:
         keys = config["keys"]["movement"][action]
@@ -237,7 +239,7 @@ def show_key_bindings_help(stdscr: curses.window, config: dict[str, Any]) -> Non
 
     y += 1
     # Action keys
-    stdscr.addstr(y, 1, "Actions:")
+    stdscr.addstr(y, 1, "Actions:")  # This can stay as is for help display
     y += 1
     for action in ["quit", "save", "return_to_title", "load", "change_theme"]:
         keys = config["keys"]["actions"][action]
@@ -247,7 +249,7 @@ def show_key_bindings_help(stdscr: curses.window, config: dict[str, Any]) -> Non
         )
         y += 1
 
-    stdscr.addstr(height - 2, 1, "Press any key to continue...")
+    stdscr.addstr(height - 2, 1, t("ui.input.any_key_continue"))
     stdscr.refresh()
     stdscr.getch()
 
@@ -260,9 +262,9 @@ def configure_save_path(stdscr: curses.window, config: dict[str, Any]) -> None:
 
         options = [
             f"Current: {current_path or '(Default)'}",
-            "Set Custom Path",
-            "Reset to Default",
-            "Back",
+            t("file.path.set_custom"),
+            t("file.path.reset_default"),
+            t("messages.back"),
         ]
 
         # Add current path info to the first option
@@ -271,50 +273,50 @@ def configure_save_path(stdscr: curses.window, config: dict[str, Any]) -> None:
         else:
             options[0] = f"Current: (Default - {default_path})"
 
-        choice = select_from_menu(stdscr, "Save Path Settings", options)
+        choice = select_from_menu(stdscr, t("file.path.title"), options)
 
-        if choice == "Set Custom Path":
-            prompt = "Enter custom save path (or press Escape to cancel):"
+        if choice == t("file.path.set_custom"):
+            prompt = t("file.path.prompt")
             new_path = get_text_input(stdscr, prompt)
 
             if new_path is not None:
                 # Validate the path
                 if new_path.strip() == "":
                     if set_save_path(config, None):
-                        show_message(stdscr, "Empty path! Setting to default.")
+                        show_message(stdscr, t("file.path.empty_path"))
                     else:
-                        show_message(stdscr, "Failed to save path configuration")
+                        show_message(stdscr, t("messages.config_save_error"))
                 else:
                     try:
                         # Try to create the directory to validate the path
                         os.makedirs(new_path, exist_ok=True)
                         if set_save_path(config, new_path):
-                            show_message(stdscr, f"Save path set to: {new_path}")
+                            show_message(stdscr, t("file.path.path_set", new_path))
                         else:
                             show_message(
-                                stdscr, "Path set but failed to save configuration"
+                                stdscr, t("file.path.save_failed")
                             )
                     except Exception as e:
-                        show_message(stdscr, f"Invalid path: {str(e)}")
+                        show_message(stdscr, t("file.path.invalid_path", str(e)))
 
-        elif choice == "Reset to Default":
+        elif choice == t("file.path.reset_default"):
             if confirm_reset_save_path(stdscr):
                 if set_save_path(config, None):
-                    show_message(stdscr, "Save path reset to default!")
+                    show_message(stdscr, t("file.path.path_reset"))
                 else:
                     show_message(
-                        stdscr, "Save path reset but failed to save configuration"
+                        stdscr, t("file.path.reset_failed")
                     )
 
-        elif choice == "Back" or choice is None:
+        elif choice == t("messages.back") or choice is None:
             break
 
 
 def confirm_reset_save_path(stdscr: curses.window) -> bool:
     """Confirm resetting save path to default."""
-    options = ["Yes", "No"]
-    choice = select_from_menu(stdscr, "Reset save path to default?", options)
-    return choice == "Yes"
+    options = [t("messages.yes"), t("messages.no")]
+    choice = select_from_menu(stdscr, t("file.path.confirm_reset"), options)
+    return choice == t("messages.yes")
 
 
 def configure_animations(stdscr: curses.window, config: dict[str, Any]) -> None:
@@ -324,18 +326,18 @@ def configure_animations(stdscr: curses.window, config: dict[str, Any]) -> None:
         speed = get_animation_speed(config)
         
         options = [
-            f"Animations: {'Enabled' if enabled else 'Disabled'}",
-            f"Animation Speed: {speed:.1f}x",
-            "Back",
+            f"{t('visual.animation.enabled')}: {t('messages.enabled') if enabled else t('messages.disabled')}",
+            f"{t('visual.animation.speed')}: {speed:.1f}x",
+            t("messages.back"),
         ]
         
-        choice = select_from_menu(stdscr, "Animation Settings", options)
+        choice = select_from_menu(stdscr, t("visual.animation.title"), options)
         
-        if choice == "Back" or choice is None:
+        if choice == t("messages.back") or choice is None:
             break
-        elif choice.startswith("Animations:"):
+        elif choice.startswith(t("visual.animation.enabled")):
             toggle_animations(stdscr, config)
-        elif choice.startswith("Animation Speed:"):
+        elif choice.startswith(t("visual.animation.speed")):
             configure_animation_speed(stdscr, config)
 
 
@@ -345,32 +347,38 @@ def toggle_animations(stdscr: curses.window, config: dict[str, Any]) -> None:
     new_state = not current_state
     
     if set_animations_enabled(config, new_state):
-        state_text = "enabled" if new_state else "disabled"
-        show_message(stdscr, f"Animations {state_text}!")
+        state_text = t("messages.animation_enabled") if new_state else t("messages.animation_disabled")
+        show_message(stdscr, state_text)
     else:
-        show_message(stdscr, "Failed to save animation settings")
+        show_message(stdscr, t("messages.animation_save_failed"))
 
 
 def configure_animation_speed(stdscr: curses.window, config: dict[str, Any]) -> None:
     """Configure animation speed."""
     current_speed = get_animation_speed(config)
-    speed_options = ["0.5x (Slow)", "1.0x (Normal)", "1.5x (Fast)", "2.0x (Very Fast)", "Back"]
+    speed_options = [
+        t("visual.animation.values.slow"),
+        t("visual.animation.values.normal"),
+        t("visual.animation.values.fast"),
+        t("visual.animation.values.very_fast"),
+        t("messages.back")
+    ]
     
-    choice = select_from_menu(stdscr, f"Current Speed: {current_speed:.1f}x", speed_options)
+    choice = select_from_menu(stdscr, f"{t('visual.animation.speed')}: {current_speed:.1f}x", speed_options)
     
-    if choice == "Back" or choice is None:
+    if choice == t("messages.back") or choice is None:
         return
     
     speed_map = {
-        "0.5x (Slow)": 0.5,
-        "1.0x (Normal)": 1.0,
-        "1.5x (Fast)": 1.5,
-        "2.0x (Very Fast)": 2.0,
+        t("visual.animation.values.slow"): 0.5,
+        t("visual.animation.values.normal"): 1.0,
+        t("visual.animation.values.fast"): 1.5,
+        t("visual.animation.values.very_fast"): 2.0,
     }
     
     new_speed = speed_map.get(choice)
     if new_speed is not None:
         if set_animation_speed(config, new_speed):
-            show_message(stdscr, f"Animation speed set to {new_speed:.1f}x!")
+            show_message(stdscr, t("messages.animation_speed_set", new_speed))
         else:
-            show_message(stdscr, "Failed to save animation speed setting")
+            show_message(stdscr, t("messages.animation_speed_save_failed"))
