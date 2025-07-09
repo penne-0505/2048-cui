@@ -1,116 +1,85 @@
 #!/bin/bash
 # Development setup script for 2048-CLI
-# Handles externally managed Python environments
+# Uses pyenv + poetry for Python environment management
 
 set -e
 
 echo "Setting up 2048-CLI development environment..."
 echo "================================================"
 
-# Check if Python 3.13+ is available
-if ! python3 --version | grep -E "3\.(13|14|15)" > /dev/null; then
-    echo "Error: Python 3.13+ is required"
-    echo "Current version: $(python3 --version)"
+# Check if pyenv is installed
+if ! command -v pyenv &> /dev/null; then
+    echo "Error: pyenv is not installed"
+    echo "Please install pyenv first: https://github.com/pyenv/pyenv#installation"
     exit 1
 fi
 
-# Function to create virtual environment if needed
-setup_venv() {
-    if [ ! -d "venv" ]; then
-        echo "Creating virtual environment..."
-        python3 -m venv venv
-    fi
-    
-    echo "Activating virtual environment..."
-    source venv/bin/activate
-    
-    echo "Installing dependencies in virtual environment..."
-    pip install -e ".[dev,build]"
-}
-
-# Check for externally managed environment
-if python3 -c "import sys; import os; exit(1 if os.path.exists('/usr/lib/python*/EXTERNALLY-MANAGED') else 0)" 2>/dev/null; then
-    echo "Externally managed Python environment detected"
-    
-    # Check if we have system packages available
-    if command -v pacman &> /dev/null; then
-        echo "Arch Linux detected - trying system packages first..."
-        
-        # Install basic Python tools if available
-        echo "Installing system Python packages..."
-        if pacman -Ss python-pip &> /dev/null; then
-            sudo pacman -S --needed python-pip python-setuptools python-wheel || true
-        fi
-        
-        # Install development tools if available
-        echo "Installing development tools..."
-        if pacman -Ss python-ruff &> /dev/null; then
-            sudo pacman -S --needed python-ruff python-mypy || true
-        fi
-        
-        # For PyInstaller, we'll use venv since it's not commonly packaged
-        echo "Setting up virtual environment for remaining dependencies..."
-        setup_venv
-        
-    else
-        echo "Using virtual environment for all dependencies..."
-        setup_venv
-    fi
-    
-else
-    echo "Standard Python environment detected"
-    
-    # Check if pip is available
-    if ! command -v pip &> /dev/null; then
-        echo "Installing pip..."
-        python3 -m ensurepip --upgrade
-    fi
-    
-    # Install development dependencies
-    echo "Installing development dependencies..."
-    pip install -e ".[dev,build]"
+# Check if poetry is installed
+if ! command -v poetry &> /dev/null; then
+    echo "Error: poetry is not installed"
+    echo "Please install poetry first: https://python-poetry.org/docs/#installation"
+    exit 1
 fi
+
+# Read required Python version from pyproject.toml
+REQUIRED_PYTHON_VERSION=$(grep -E "^python\s*=" pyproject.toml | sed 's/.*"\([^"]*\)".*/\1/' | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')
+
+if [ -z "$REQUIRED_PYTHON_VERSION" ]; then
+    echo "Error: Could not determine required Python version from pyproject.toml"
+    exit 1
+fi
+
+echo "Required Python version: $REQUIRED_PYTHON_VERSION"
+
+# Check if the required Python version is available in pyenv
+if ! pyenv versions | grep -q "$REQUIRED_PYTHON_VERSION"; then
+    echo "Installing Python $REQUIRED_PYTHON_VERSION with pyenv..."
+    pyenv install "$REQUIRED_PYTHON_VERSION"
+fi
+
+# Set the local Python version
+echo "Setting local Python version to $REQUIRED_PYTHON_VERSION..."
+pyenv local "$REQUIRED_PYTHON_VERSION"
+
+# Verify Python version
+echo "Verifying Python version..."
+python --version
+
+# Install dependencies with poetry
+echo "Installing dependencies with poetry..."
+poetry install --with dev,build
 
 # Install pre-commit hooks (optional)
 read -p "Install pre-commit hooks? (y/n): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Installing pre-commit hooks..."
-    pre-commit install
+    poetry run pre-commit install
     echo "Pre-commit hooks installed. They will run automatically on git commit."
 fi
 
 # Run initial code quality checks
 echo "Running initial code quality checks..."
 
-# Check if tools are available
-if command -v ruff &> /dev/null; then
-    echo "Running ruff linter..."
-    if ruff check src/; then
-        echo "✓ Ruff linter passed"
-    else
-        echo "⚠ Ruff linter found issues. Run 'make fix' to auto-fix some issues."
-    fi
-    
-    echo "Running ruff formatter check..."
-    if ruff format --check src/; then
-        echo "✓ Code formatting is correct"
-    else
-        echo "⚠ Code formatting issues found. Run 'make format' to fix."
-    fi
+echo "Running ruff linter..."
+if poetry run ruff check src/; then
+    echo "✓ Ruff linter passed"
 else
-    echo "⚠ Ruff not available. Install it or activate virtual environment."
+    echo "⚠ Ruff linter found issues. Run 'make fix' to auto-fix some issues."
 fi
 
-if command -v mypy &> /dev/null; then
-    echo "Running mypy type checker..."
-    if mypy src/; then
-        echo "✓ MyPy type checker passed"
-    else
-        echo "⚠ MyPy found type issues"
-    fi
+echo "Running ruff formatter check..."
+if poetry run ruff format --check src/; then
+    echo "✓ Code formatting is correct"
 else
-    echo "⚠ MyPy not available. Install it or activate virtual environment."
+    echo "⚠ Code formatting issues found. Run 'make format' to fix."
+fi
+
+echo "Running mypy type checker..."
+if poetry run mypy src/; then
+    echo "✓ MyPy type checker passed"
+else
+    echo "⚠ MyPy found type issues"
 fi
 
 echo ""
@@ -126,7 +95,7 @@ echo "  make fix        - Fix auto-fixable issues"
 echo "  make build      - Build the application"
 echo ""
 echo "To run the game:"
-echo "  python src/main.py"
+echo "  poetry run python src/main.py"
 echo ""
-echo "Note: If using virtual environment, activate it first:"
-echo "  source venv/bin/activate"
+echo "Note: Poetry will automatically manage the virtual environment."
+echo "To activate the poetry shell: poetry shell"
