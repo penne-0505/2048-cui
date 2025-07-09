@@ -4,7 +4,7 @@
 
 ## インストール
 
-### 📦 バイナリダウンロード（推奨）
+### バイナリダウンロード（推奨）
 
 最新のビルド済みバイナリを[Releases](https://github.com/your-username/2048-cli/releases)からダウンロードできます：
 
@@ -35,8 +35,8 @@ chmod +x 2048-cli-x86_64.AppImage
 
 #### 必要要件
 
-- Python 3.13 以上
-- Poetry
+- Python 3.11 以上（3.13 未満）
+- Poetry（推奨）または pyproject.toml 対応のパッケージマネージャー
 
 #### セットアップ
 
@@ -49,37 +49,56 @@ chmod +x 2048-cli-x86_64.AppImage
 
 2. 依存関係をインストール：
 
+   **Poetry + pyenv（推奨）:**
+   ```bash
+   # Python環境管理と依存関係管理を統合
+   pyenv install 3.11.9  # 必要に応じて
+   pyenv local 3.11.9
+   poetry install
+   ```
+
+   **Poetry のみ:**
    ```bash
    poetry install
    ```
 
+   **uv（高速代替手段）:**
+   ```bash
+   uv sync
+   ```
+
+   **pip（最低限）:**
+   ```bash
+   pip install -e .
+   ```
+
 3. ゲームを実行：
 
+   **Poetry:**
    ```bash
    poetry run python src/main.py
    ```
 
-#### 代替実行方法
+   **uv:**
+   ```bash
+   uv run python src/main.py
+   ```
 
-Pythonで直接実行することも可能です：
-
-```bash
-python src/main.py
-```
+   **pip:**
+   ```bash
+   python src/main.py
+   ```
 
 #### バイナリビルド
 
 自分でバイナリをビルドしたい場合：
 
 ```bash
-# Linux/macOS
-./build.sh
-
-# Windows
-build.bat
-
-# または、Pythonスクリプトで
+# Pythonスクリプトでビルド（全プラットフォーム対応）
 python build.py
+
+# Makefileを使用（Linux/macOS）
+make build
 ```
 
 ## プレイ方法
@@ -107,6 +126,10 @@ python build.py
 - セーブ/ロード機能
 - カスタムキーバインディング
 - エンドレスモード
+- 多言語対応（日本語・英語）
+- アニメーション機能（タイル移動、マージ、スポーン）
+- 設定メニュー（キーバインディング、アニメーション、言語設定）
+- テーマシステム
 
 ## プロジェクト構造
 
@@ -114,27 +137,37 @@ python build.py
 2048-cli/
 ├── src/
 │   ├── main.py               # エントリーポイント
+│   ├── config_example.json   # 設定ファイルのサンプル
 │   ├── core/
 │   │   ├── config.py         # 設定管理
+│   │   ├── constants.py      # 定数定義
+│   │   ├── i18n.py          # 国際化システム
+│   │   ├── key_config.py     # キーバインディング設定
+│   │   ├── key_display.py    # キーバインディング表示
 │   │   ├── modern_themes.py  # カラーテーマとスタイリング
-│   │   ├── save_load.py      # セーブ/ロード機能
-│   │   └── key_display.py    # キーバインディング表示
+│   │   └── save_load.py      # セーブ/ロード機能
 │   ├── game/
 │   │   ├── board.py          # ゲームボードロジック
 │   │   └── game.py           # コアゲームロジック
+│   ├── locales/
+│   │   ├── en.json          # 英語翻訳
+│   │   └── ja.json          # 日本語翻訳
 │   └── ui/
-│       ├── menu.py           # メニューシステム
+│       ├── animation.py      # アニメーションシステム
 │       ├── input.py          # テキスト入力処理
-│       └── modern_display.py # レンダリング
+│       ├── key_config_menu.py # キーバインディング設定メニュー
+│       ├── menu.py           # メニューシステム
+│       ├── modern_display.py # レンダリング
+│       └── settings_menu.py  # 設定メニュー
 ├── .github/workflows/        # GitHub Actions CI/CD
 │   └── build.yml             # 自動ビルド設定
 ├── build/                    # ビルド一時ファイル
 ├── dist/                     # ビルド成果物
 ├── build.spec                # PyInstaller設定
 ├── build.py                  # Pythonビルドスクリプト
-├── build.sh                  # Linux/macOS用ビルドスクリプト
-├── build.bat                 # Windows用ビルドスクリプト
 ├── config.json               # ゲーム設定
+├── dev-setup.sh              # 開発環境セットアップスクリプト
+├── Makefile                  # ビルドとタスク自動化
 └── pyproject.toml            # プロジェクト設定と依存関係
 ```
 
@@ -144,21 +177,57 @@ python build.py
 
 ```json
 {
-  "controls": {
-    "up": ["KEY_UP", "w"],
-    "down": ["KEY_DOWN", "s"],
-    "left": ["KEY_LEFT", "a"],
-    "right": ["KEY_RIGHT", "d"]
+  "keys": {
+    "movement": {
+      "up": ["KEY_UP", "w"],
+      "down": ["KEY_DOWN", "s"],
+      "left": ["KEY_LEFT", "a"],
+      "right": ["KEY_RIGHT", "d"]
+    },
+    "actions": {
+      "quit": ["q", "ESC"],
+      "save": ["h"],
+      "return_to_title": ["r"],
+      "load": ["l"],
+      "change_theme": ["t"]
+    }
+  },
+  "theme": "modern",
+  "language": "en",
+  "save_path": null,
+  "animations": {
+    "enabled": false,
+    "speed": 1.0,
+    "fps": 60
+  },
+  "ui": {
+    "emoji_enabled": false
   }
 }
 ```
+
+### 言語設定
+
+ゲームは日本語と英語に対応しています。言語設定は以下の方法で変更できます：
+
+- ゲーム内の設定メニューから変更
+- `config.json` の `language` 設定を変更（`"en"` または `"ja"`）
+- 絵文字表示の有効/無効は `ui.emoji_enabled` で設定
+
+### アニメーション設定
+
+タイル移動、マージ、スポーンのアニメーションを設定できます：
+
+- `animations.enabled`: アニメーションの有効/無効
+- `animations.speed`: アニメーション速度（0.5-2.0）
+- `animations.fps`: フレームレート（30-120）
 
 ## 開発
 
 ### 開発環境
 
-- Python 3.13+
-- Poetry または pip
+- Python 3.11+（3.13 未満）
+- Poetry
 
 ### 開発セットアップ
 
@@ -169,8 +238,36 @@ python build.py
 ```
 
 手動セットアップ:
+
+**Poetry + pyenv（推奨）:**
 ```bash
-# 開発依存関係をインストール
+# Python環境とパッケージ管理を統合
+pyenv install 3.11.9  # 必要に応じて
+pyenv local 3.11.9
+poetry install --with dev
+
+# プリコミットフックをインストール（推奨）
+poetry run pre-commit install
+
+# コード品質チェック
+make check
+```
+
+**uv（代替手段）:**
+```bash
+# 高速な依存関係管理
+uv sync --extra dev
+
+# プリコミットフックをインストール（推奨）
+uv run pre-commit install
+
+# コード品質チェック
+make check
+```
+
+**pip（最低限）:**
+```bash
+# 基本的な依存関係管理
 pip install -e ".[dev]"
 
 # プリコミットフックをインストール（推奨）
@@ -199,7 +296,7 @@ make fix        # 自動修正可能な問題を修正
 
 ### アーキテクチャ
 
-特に厳密なアーキテクチャはありませんが、表示/ロジックは分離されており、ごく一般的な原則には従っています。
+特に厳密なアーキテクチャはありませんが、インターフェイス/ロジックは分離されており、ごく一般的な原則には従っています。
 
 ### 主要コンポーネント
 
@@ -213,14 +310,11 @@ make fix        # 自動修正可能な問題を修正
 #### ローカルビルド
 
 ```bash
-# Linux/macOS
-./build.sh
-
-# Windows
-build.bat
-
-# Python（全プラットフォーム）
+# Pythonスクリプトでビルド（全プラットフォーム対応）
 python build.py
+
+# Makefileを使用（Linux/macOS）
+make build
 ```
 
 #### 出力形式
@@ -245,7 +339,7 @@ GitHub Actionsにより以下のタイミングで自動ビルドが実行され
 
 ## システム要件
 
-- Python 3.13+
+- Python 3.11+（3.13 未満）
 - カラーサポート付きターミナル
 - 最小ターミナルサイズ: 80x24（推奨）
 
