@@ -364,7 +364,6 @@ def draw_board(
     stdscr: curses.window,
     game: Any,
     config: dict[str, Any] | None = None,
-    enable_animations: bool = False,
 ) -> None:
     """Compatibility wrapper for existing main.py."""
     draw_modern_game(stdscr, game, config)

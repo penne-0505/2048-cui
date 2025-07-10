@@ -69,25 +69,10 @@
   },
   "visual": {
     "title": "Visual Effects",
-    "animation_settings": "Animation Settings",
     "emoji_display": "Emoji Display",
     "emoji": {
       "title": "✨ Visual Effects",
-      "animation_settings": "🎬 Animation Settings",
       "emoji_display": "😀 Emoji Display"
-    },
-    "animation": {
-      "title": "Animation Settings",
-      "enabled": "Animations",
-      "speed": "Animation Speed",
-      "values": {
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "slow": "0.5x (Slow)",
-        "normal": "1.0x (Normal)",
-        "fast": "1.5x (Fast)",
-        "very_fast": "2.0x (Very Fast)"
-      }
     },
     "emoji": {
       "title": "Emoji Display Settings",
@@ -134,16 +119,9 @@
     "error": "Failed to change language"
   },
   "messages": {
-    "confirm_reset": "Are you sure you want to reset ALL settings to defaults?\\n(This includes keys, animations, and file paths)",
-    "confirm_reset_keys": "Are you sure you want to reset all key bindings to defaults?",
+    "confirm_reset": "Are you sure you want to reset ALL settings to defaults?\\n(This includes keys and file paths)",
     "reset_success": "All settings reset to defaults!",
     "reset_error": "Settings reset but failed to save configuration",
-    "animation_enabled": "Animations enabled!",
-    "animation_disabled": "Animations disabled!",
-    "animation_speed_changed": "Animation speed changed!",
-    "animation_save_failed": "Failed to save animation settings",
-    "animation_speed_set": "Animation speed set to {}x!",
-    "animation_speed_save_failed": "Failed to save animation speed setting",
     "emoji_enabled": "Emoji display enabled!",
     "emoji_disabled": "Emoji display disabled!",
     "save_success": "Game saved successfully!",

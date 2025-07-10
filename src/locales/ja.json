@@ -69,25 +69,10 @@
   },
   "visual": {
     "title": "視覚効果",
-    "animation_settings": "アニメーション設定",
     "emoji_display": "絵文字表示",
     "emoji": {
       "title": "✨ 視覚効果",
-      "animation_settings": "🎬 アニメーション設定",
       "emoji_display": "😀 絵文字表示"
-    },
-    "animation": {
-      "title": "アニメーション設定",
-      "enabled": "アニメーション",
-      "speed": "アニメーション速度",
-      "values": {
-        "enabled": "有効",
-        "disabled": "無効",
-        "slow": "0.5x (遅い)",
-        "normal": "1.0x (標準)",
-        "fast": "1.5x (速い)",
-        "very_fast": "2.0x (非常に速い)"
-      }
     },
     "emoji": {
       "title": "絵文字表示設定",
@@ -134,16 +119,9 @@
     "error": "言語の変更に失敗しました"
   },
   "messages": {
-    "confirm_reset": "すべての設定をデフォルトに戻してもよろしいですか？\\n（キー、アニメーション、ファイルパスが含まれます）",
-    "confirm_reset_keys": "すべてのキーバインドをデフォルトに戻してもよろしいですか？",
+    "confirm_reset": "すべての設定をデフォルトに戻してもよろしいですか？\\n（キー、ファイルパスが含まれます）",
     "reset_success": "すべての設定をデフォルトに戻しました！",
     "reset_error": "設定をリセットしましたが、設定の保存に失敗しました",
-    "animation_enabled": "アニメーションを有効にしました！",
-    "animation_disabled": "アニメーションを無効にしました！",
-    "animation_speed_changed": "アニメーション速度を変更しました！",
-    "animation_save_failed": "アニメーション設定の保存に失敗しました",
-    "animation_speed_set": "アニメーション速度を{}xに設定しました！",
-    "animation_speed_save_failed": "アニメーション速度設定の保存に失敗しました",
     "emoji_enabled": "絵文字表示を有効にしました！",
     "emoji_disabled": "絵文字表示を無効にしました！",
     "save_success": "ゲームを正常に保存しました！",

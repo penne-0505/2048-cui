@@ -109,32 +109,28 @@ def show_key_settings_menu(stdscr: curses.window, config: dict[str, Any]) -> Non
 
 
 def show_visual_effects_menu(stdscr: curses.window, config: dict[str, Any]) -> None:
-    """Show visual effects and animation settings."""
+    """Show visual effects settings."""
     from core.config import is_emoji_enabled
-    from ui.key_config_menu import configure_animations
 
     while True:
         emoji_on = is_emoji_enabled(config)
 
-        options = [
-            t("visual.animation_settings", use_emoji=emoji_on),
-            t("visual.emoji_display", use_emoji=emoji_on),
-            t("settings.back", use_emoji=emoji_on),
-        ]
+        if emoji_on:
+            options = [
+                "😀 Emoji Display",
+                "⬅️ Back",
+            ]
+        else:
+            options = [
+                "Emoji Display",
+                "Back",
+            ]
 
         choice = select_from_menu(
             stdscr, t("visual.title", use_emoji=emoji_on), options
         )
 
-        if choice and (
-            t("visual.animation_settings") in choice
-            or t("visual.animation_settings", use_emoji=True) in choice
-        ):
-            configure_animations(stdscr, config)
-        elif choice and (
-            t("visual.emoji_display") in choice
-            or t("visual.emoji_display", use_emoji=True) in choice
-        ):
+        if choice and "Emoji Display" in choice:
             configure_emoji_display(stdscr, config)
         elif (
             choice
