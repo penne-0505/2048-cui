@@ -87,32 +87,56 @@ jobs:
     - name: Download all artifacts
       uses: actions/download-artifact@v4
       
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        # Get the previous tag
+        PREV_TAG=$(git tag --sort=-version:refname | head -2 | tail -1)
+        
+        # Get current tag
+        CURRENT_TAG=${GITHUB_REF#refs/tags/}
+        
+        # Generate changelog
+        CHANGELOG=""
+        if [ ! -z "$PREV_TAG" ]; then
+          CHANGELOG=$(git log ${PREV_TAG}..HEAD --oneline --pretty=format:"- %s")
+        else
+          CHANGELOG=$(git log --oneline --pretty=format:"- %s")
+        fi
+        
+        # Create release body
+        cat << EOF > release_body.md
+        ## 2048-CLI Release ${CURRENT_TAG}
+        
+        ### Changes
+        ${CHANGELOG}
+        
+        ### Downloads
+        - **Linux**: \`2048-cli\` (binary)
+        - **Windows**: \`2048-cli.exe\`
+        
+        ### インストール方法
+        1. 対応するファイルをダウンロード
+        2. 実行権限を付与（Linux/macOS）
+        3. ターミナルで実行
+        
+        ### 使用方法
+        \`\`\`bash
+        # Linux binary
+        chmod +x 2048-cli
+        ./2048-cli
+        
+        # Windows
+        2048-cli.exe
+        \`\`\`
+        EOF
+    
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
           linux-builds/2048-cli
           windows-builds/2048-cli.exe
-        body: |
-          ## 2048-CLI Release
-          
-          ### Downloads
-          - **Linux**: `2048-cli` (binary)
-          - **Windows**: `2048-cli.exe`
-          
-          ### インストール方法
-          1. 対応するファイルをダウンロード
-          2. 実行権限を付与（Linux/macOS）
-          3. ターミナルで実行
-          
-          ### 使用方法
-          ```bash
-          # Linux binary
-          chmod +x 2048-cli
-          ./2048-cli
-          
-          # Windows
-          2048-cli.exe
-          ```
+        body_path: release_body.md
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

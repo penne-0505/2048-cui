@@ -25,7 +25,11 @@ DEFAULT_CONFIG = {
         },
     },
     "theme": "modern",
+    "language": "en",  # Default language
     "save_path": None,  # None means use default path
+    "ui": {
+        "emoji_enabled": False,
+    },
 }
 
 
@@ -114,3 +118,66 @@ def get_key_codes(
                 action_keys[action].append(ord(key))
 
     return key_map, action_keys
+
+
+def get_ui_config(config: dict[str, Any]) -> dict[str, Any]:
+    """Get UI configuration settings."""
+    return config.get("ui", {
+        "emoji_enabled": False,
+    })
+
+
+def is_emoji_enabled(config: dict[str, Any]) -> bool:
+    """Check if emoji display is enabled."""
+    ui = get_ui_config(config)
+    return ui.get("emoji_enabled", False)
+
+
+def set_emoji_enabled(config: dict[str, Any], enabled: bool) -> bool:
+    """Enable or disable emoji display and save config. Returns True if successful."""
+    if "ui" not in config:
+        config["ui"] = {
+            "emoji_enabled": False,
+        }
+    config["ui"]["emoji_enabled"] = enabled
+
+    # Update i18n manager emoji setting
+    from .i18n import set_emoji_enabled as i18n_set_emoji_enabled
+    i18n_set_emoji_enabled(enabled)
+
+    return save_config(config)
+
+
+def get_language(config: dict[str, Any]) -> str:
+    """Get the current language from config."""
+    return config.get("language", "en")
+
+
+def set_language(config: dict[str, Any], language_code: str) -> bool:
+    """Set the language in config and save. Returns True if successful."""
+    from .i18n import set_language as i18n_set_language
+
+    # Validate language is available
+    if i18n_set_language(language_code):
+        config["language"] = language_code
+        return save_config(config)
+    return False
+
+
+def get_available_languages() -> list[str]:
+    """Get list of available language codes."""
+    from .i18n import get_available_languages as i18n_get_available_languages
+    return i18n_get_available_languages()
+
+
+def initialize_i18n_from_config(config: dict[str, Any]) -> None:
+    """Initialize i18n manager with settings from config."""
+    from .i18n import set_language as i18n_set_language, set_emoji_enabled as i18n_set_emoji_enabled
+
+    # Set language
+    language = get_language(config)
+    i18n_set_language(language)
+
+    # Set emoji enabled
+    emoji_enabled = is_emoji_enabled(config)
+    i18n_set_emoji_enabled(emoji_enabled)

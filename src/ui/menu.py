@@ -1,7 +1,9 @@
 import curses
 from typing import Any
 
+from core.config import is_emoji_enabled
 from core.constants import ENTER_KEY_CODES, ESCAPE_KEY_CODE
+from core.i18n import t
 from core.save_load import MANUAL_SAVE_SLOTS, get_all_save_slots_info, get_save_slots
 from ui.input import get_text_input
 
@@ -33,19 +35,29 @@ def select_from_menu(
             return None
 
 
-def show_start_menu(stdscr: curses.window) -> str | None:
-    options = ["New Game"]
-    if get_save_slots():
-        options.append("Load Game")
-    options.append("Key Configuration")
+def show_start_menu(stdscr: curses.window, config: Any = None) -> str | None:
+    emoji_on = config and is_emoji_enabled(config)
 
-    choice = select_from_menu(stdscr, "Welcome to 2048!", options)
-    if choice == "New Game":
+    options = [t("menu.new_game", use_emoji=emoji_on)]
+    if get_save_slots():
+        options.append(t("menu.load_game", use_emoji=emoji_on))
+    options.append(t("menu.settings", use_emoji=emoji_on))
+
+    choice = select_from_menu(stdscr, t("menu.welcome_title"), options)
+
+    # Parse choice regardless of emoji
+    if choice and (
+        t("menu.new_game") in choice or t("menu.new_game", use_emoji=True) in choice
+    ):
         return "new"
-    elif choice == "Load Game":
+    elif choice and (
+        t("menu.load_game") in choice or t("menu.load_game", use_emoji=True) in choice
+    ):
         return "load"
-    elif choice == "Key Configuration":
-        return "key_config"
+    elif choice and (
+        t("menu.settings") in choice or t("menu.settings", use_emoji=True) in choice
+    ):
+        return "settings"
     return None
 
 
@@ -61,12 +73,12 @@ def show_load_menu(
     slot_mapping = {}
 
     for info in slots_info:
-        status = "Game Over" if info["game_over"] else "In Progress"
-        display_text = f"{info['name']} (Slot {info['slot']}): Score {info['score']} ({status}) - {info['date']}"
+        status = t("game.game_over") if info["game_over"] else t("game.in_progress")
+        display_text = f"{info['name']} ({t('game.slot')} {info['slot']}): {t('game.score')} {info['score']} ({status}) - {info['date']}"
         options.append(display_text)
         slot_mapping[display_text] = info["slot"]
 
-    choice = select_from_menu(stdscr, "Select a save slot to load:", options)
+    choice = select_from_menu(stdscr, t("game.load.title"), options)
     if choice and choice in slot_mapping:
         return slot_mapping[choice]
     return None
@@ -85,22 +97,22 @@ def show_save_menu(
     for i in range(1, MANUAL_SAVE_SLOTS + 1):
         existing_name = existing_slots.get(i, "")
         if existing_name:
-            display_text = f"Slot {i}: {existing_name}"
+            display_text = f"{t('game.slot')} {i}: {existing_name}"
         else:
-            display_text = f"Slot {i}: [Empty]"
+            display_text = f"{t('game.slot')} {i}: {t('game.empty')}"
         options.append(display_text)
         slot_mapping[display_text] = i
 
-    choice = select_from_menu(stdscr, "Select a slot to save:", options)
+    choice = select_from_menu(stdscr, t("game.save.title"), options)
     if choice and choice in slot_mapping:
         slot = slot_mapping[choice]
 
         # Get save name from user
         current_name = existing_slots.get(slot, "")
         prompt = (
-            f"Enter name for save (current: '{current_name}'):"
+            t("game.save.name_current", current_name)
             if current_name
-            else "Enter name for save:"
+            else t("game.save.name_prompt")
         )
         name = get_text_input(stdscr, prompt)
 

@@ -1,0 +1,170 @@
+{
+  "menu": {
+    "welcome_title": "2048へようこそ！",
+    "new_game": "新しいゲーム",
+    "load_game": "ゲームをロード",
+    "settings": "設定",
+    "emoji": {
+      "new_game": "🎮 新しいゲーム",
+      "load_game": "📁 ゲームをロード",
+      "settings": "⚙️ 設定"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "key_settings": "キー設定",
+    "visual_effects": "視覚効果",
+    "file_settings": "ファイル設定",
+    "language_settings": "言語設定",
+    "reset_defaults": "デフォルトに戻す",
+    "back_main": "メインメニューに戻る",
+    "back": "戻る",
+    "emoji": {
+      "title": "⚙️ 設定",
+      "key_settings": "⌨️ キー設定",
+      "visual_effects": "✨ 視覚効果",
+      "file_settings": "📂 ファイル設定",
+      "language_settings": "🌐 言語設定",
+      "reset_defaults": "🔄 デフォルトに戻す",
+      "back_main": "⬅️ メインメニューに戻る",
+      "back": "⬅️ 戻る"
+    }
+  },
+  "keys": {
+    "title": "キー設定",
+    "movement_keys": "移動キー",
+    "action_keys": "アクションキー",
+    "emoji": {
+      "title": "⌨️ キー設定",
+      "movement_keys": "🎯 移動キー",
+      "action_keys": "⚡ アクションキー"
+    },
+    "actions": {
+      "up": "上",
+      "down": "下",
+      "left": "左",
+      "right": "右",
+      "quit": "終了",
+      "save": "保存",
+      "load": "ロード",
+      "return_title": "タイトルに戻る",
+      "change_theme": "テーマ変更"
+    },
+    "configure": {
+      "title": "{}の設定",
+      "prompt": "{}に使用するキーを押してください:",
+      "success": "{}のキーを{}に変更しました！",
+      "invalid": "無効なキーです！もう一度試してください。",
+      "cancel": "設定をキャンセルしました。",
+      "add_new_key": "新しいキーを追加",
+      "remove_key": "削除: {}",
+      "bind_prompt": "バインドしたいキーを押すか、ESCでキャンセル",
+      "safe_keys_only": "ホワイトリストの安全なキーのみ許可されます",
+      "key_not_safe": "キー'{}'は安全なバインド可能キーリストにありません",
+      "added_binding": "キーバインドを追加しました: {}",
+      "removed_binding": "キーバインドを削除しました: {}",
+      "binding_failed": "キーバインドを追加しましたが、設定の保存に失敗しました",
+      "remove_failed": "キーバインドを削除しましたが、設定の保存に失敗しました"
+    }
+  },
+  "visual": {
+    "title": "視覚効果",
+    "emoji_display": "絵文字表示",
+    "emoji": {
+      "title": "✨ 視覚効果",
+      "emoji_display": "😀 絵文字表示"
+    },
+    "emoji": {
+      "title": "絵文字表示設定",
+      "enabled": "有効",
+      "disabled": "無効"
+    }
+  },
+  "file": {
+    "title": "ファイル設定",
+    "save_path": "保存パス設定",
+    "emoji": {
+      "title": "📂 ファイル設定",
+      "save_path": "💾 保存パス設定"
+    },
+    "path": {
+      "title": "保存パス設定",
+      "current": "現在の保存パス",
+      "default": "デフォルトパス",
+      "custom": "カスタムパス",
+      "set_custom": "カスタムパスを設定",
+      "reset_default": "デフォルトに戻す",
+      "prompt": "カスタム保存パスを入力してください（Escでキャンセル）:",
+      "success": "保存パスを正常に更新しました！",
+      "error": "保存パスの更新に失敗しました",
+      "empty_path": "空のパスです！デフォルトに設定します。",
+      "invalid_path": "無効なパス: {}",
+      "path_set": "保存パスを設定しました: {}",
+      "path_reset": "保存パスをデフォルトに戻しました！",
+      "confirm_reset": "保存パスをデフォルトに戻しますか？",
+      "save_failed": "パスを設定しましたが、設定の保存に失敗しました",
+      "reset_failed": "保存パスをリセットしましたが、設定の保存に失敗しました"
+    }
+  },
+  "language": {
+    "title": "言語設定",
+    "current": "現在の言語",
+    "select": "言語を選択",
+    "english": "English",
+    "japanese": "日本語",
+    "emoji": {
+      "title": "🌐 言語設定"
+    },
+    "success": "言語を正常に変更しました！",
+    "error": "言語の変更に失敗しました"
+  },
+  "messages": {
+    "confirm_reset": "すべての設定をデフォルトに戻してもよろしいですか？\\n（キー、ファイルパスが含まれます）",
+    "reset_success": "すべての設定をデフォルトに戻しました！",
+    "reset_error": "設定をリセットしましたが、設定の保存に失敗しました",
+    "emoji_enabled": "絵文字表示を有効にしました！",
+    "emoji_disabled": "絵文字表示を無効にしました！",
+    "save_success": "ゲームを正常に保存しました！",
+    "save_error": "ゲームの保存に失敗しました",
+    "load_success": "ゲームを正常にロードしました！",
+    "load_error": "ゲームのロードに失敗しました",
+    "config_save_error": "設定の保存に失敗しました",
+    "yes": "はい",
+    "no": "いいえ",
+    "enabled": "有効",
+    "disabled": "無効",
+    "back": "戻る"
+  },
+  "ui": {
+    "controls": {
+      "back_restart": "戻る/リスタート",
+      "arrows": "↑ ← ↓ →",
+      "quit": "終了",
+      "game_controls": "{}: 戻る   {}: 保存   {}: ロード   {}: テーマ"
+    },
+    "input": {
+      "confirm_cancel": "Enterで確定、Escでキャンセル",
+      "backspace_help": "Backspaceで文字を削除",
+      "any_key_continue": "何かキーを押すと続行...",
+      "key_bind_prompt": "バインドしたいキーを押すか、ESCでキャンセル",
+      "safe_keys_only": "ホワイトリストの安全なキーのみ許可されます"
+    }
+  },
+  "game": {
+    "score": "スコア",
+    "game_over": "ゲームオーバー",
+    "in_progress": "進行中",
+    "slot": "スロット",
+    "date": "日付",
+    "empty": "[空]",
+    "save": {
+      "title": "保存するスロットを選択してください:",
+      "name_prompt": "保存名を入力してください:",
+      "name_current": "保存名を入力してください（現在: '{}'）:"
+    },
+    "load": {
+      "title": "ロードするセーブスロットを選択してください:",
+      "no_saves": "セーブファイルが見つかりません"
+    }
+  }
+}

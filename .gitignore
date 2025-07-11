@@ -3,8 +3,18 @@ poetry.lock
 .ruff_cache/
 src/__pycache__/
 src/2048_cli.egg-info/
+# Python cache files
 *.pyc
+*.pyo
+__pycache__/
+*.py[cod]
+*$py.class
 __init__.py
 saves/
 build/
 dist/
+config.json
+*.egg
+*.egg-info
+.vscode/
+.idx/

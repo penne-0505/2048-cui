@@ -8,6 +8,7 @@ from core.constants import (
     ESCAPE_KEY_CODE,
     MAX_INPUT_LENGTH,
 )
+from core.i18n import t
 
 
 def get_text_input(
@@ -26,8 +27,8 @@ def get_text_input(
     input_x = 2
 
     # Instructions
-    stdscr.addstr(input_y + 2, 2, "Press Enter to confirm, Esc to cancel")
-    stdscr.addstr(input_y + 3, 2, "Use Backspace to delete characters")
+    stdscr.addstr(input_y + 2, 2, t("ui.input.confirm_cancel"))
+    stdscr.addstr(input_y + 3, 2, t("ui.input.backspace_help"))
 
     # Input box border
     box_width = min(max_length + 4, width - 4)

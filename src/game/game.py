@@ -17,9 +17,6 @@ class Game:
         self.score: int = 0
         self.game_over: bool = False
         self.endless_mode: bool = False
-        self.recent_merges: list[
-            tuple[int, int, int]
-        ] = []  # Track recent merges for animations
         self._last_score_change: int = 0  # Track score changes for display
         self._score_change_time: float = 0  # Track when score changed
         self._score_history: list[
@@ -84,7 +81,6 @@ class Game:
 
     def _move_left(self) -> bool:
         moved = False
-        self.recent_merges = []  # Clear previous merges
         old_score = self.score
 
         for r in range(self.board.size):
@@ -99,8 +95,6 @@ class Game:
                     new_row[i] = merged_value
                     self.score += merged_value
 
-                    # Record merge for animation (position after merge)
-                    self.recent_merges.append((r, col_offset, merged_value))
 
                     new_row.pop(i + 1)
                     i += 1  # Skip next tile to prevent double merging
@@ -132,6 +126,3 @@ class Game:
 
         return moved
 
-    def get_recent_merges(self) -> list[tuple[int, int, int]]:
-        """Get recent tile merges for animation purposes."""
-        return self.recent_merges
